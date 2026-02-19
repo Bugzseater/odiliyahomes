@@ -1,0 +1,74 @@
+/* Phone List Component Styles */
+
+.phone-list-container {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+}
+
+/* Phone Item */
+.phone-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  text-decoration: none;
+  color: rgb(0, 0, 0);
+  font-weight: 600;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.phone-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Flag Icons */
+.phone-flag-icon {
+  font-size: 0.9rem;
+  width: 14px;
+  height: 11px;
+  border-radius: 2px;
+  display: inline-block;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.phone-number {
+  color: rgba(0, 0, 0, 0.9);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .phone-list-container {
+    gap: 0.5rem;
+  }
+
+  .phone-item {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  .phone-flag-icon {
+    width: 18px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .phone-list-container {
+    display: none;
+  }
+}

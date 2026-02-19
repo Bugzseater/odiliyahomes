@@ -1,0 +1,648 @@
+/* CSS Variables for consistent theming */
+:root {
+  --primary-orange: #f69321;
+  --primary-green: #7a9b76;
+  --text-white: #ffffff;
+  --text-dark: #2c3e50;
+  --text-light: #ffffff;
+  --text-black: #000000;
+  --background-overlay: #ffffff;
+  --border-radius: 20px;
+  --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.15);
+  --search-input: #ffffff;
+  --background-image: url("../assets/images/home.png");
+
+  /* Lands Section Colors */
+  --lands-green: #9ebd82;
+  --lands-green-text: #6b8c4c;
+  --lands-gray: #d6d6d7;
+  --lands-text-black: #000000;
+
+  /* Amenity Pill Styles */
+  --amenity-pill-bg: rgba(255, 255, 255, 0.65);
+  --amenity-pill-border: rgba(255, 255, 255, 0.9);
+  --amenity-pill-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.12),
+    0 2px 4px rgba(0, 0, 0, 0.08);
+  --amenity-pill-blur: 12px;
+}
+
+/* Global styles and CSS reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  line-height: 1.6;
+  background-color: #ffffff;
+}
+
+/* Feature / Amenity Pills */
+.amenity-pills {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.amenity-pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.9rem;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.72) 0%,
+    rgba(240, 240, 240, 0.55) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 14px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #222;
+  backdrop-filter: blur(var(--amenity-pill-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--amenity-pill-blur)) saturate(160%);
+  box-shadow: var(--amenity-pill-shadow);
+  min-width: 115px;
+  justify-content: flex-start;
+  text-align: left;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.4;
+}
+
+.amenity-pill .icon {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  color: #444;
+  opacity: 0.9;
+}
+
+.amenity-pill:hover {
+  box-shadow: 0 6px 18px -4px rgba(0, 0, 0, 0.18), 0 3px 6px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+  transition: all 0.25s ease;
+}
+.amenity-pill:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px -2px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 600px) {
+  .amenity-pill {
+    font-size: 0.7rem;
+    padding: 0.5rem 0.75rem;
+    min-width: 95px;
+    gap: 0.35rem;
+    line-height: 1.35;
+  }
+
+  .amenity-pill .icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  .amenity-pills {
+    gap: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .amenity-pill {
+    font-size: 0.68rem;
+    padding: 0.5rem 0.7rem;
+    min-width: auto;
+    max-width: 100%;
+    border-radius: 12px;
+    line-height: 1.3;
+    flex: 0 1 auto;
+  }
+
+  .amenity-pill .icon {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+  }
+
+  .amenity-pills {
+    gap: 0.55rem;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 380px) {
+  .amenity-pill {
+    font-size: 0.65rem;
+    padding: 0.45rem 0.65rem;
+    line-height: 1.3;
+  }
+
+  .amenity-pill .icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .amenity-pills {
+    gap: 0.5rem;
+  }
+}
+
+/* Icon Page Responsive Styles */
+@media (max-width: 768px) {
+  .icon-page {
+    padding-top: 5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .icon-page {
+    padding-top: 4.5rem !important;
+  }
+}
+
+/* Residence Page Responsive Styles */
+.residence-page {
+  padding-top: 7rem;
+  min-height: 100vh;
+  background: #e5e5e5;
+}
+
+/* Loading overlay responsive */
+.residence-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.residence-loading-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  max-width: 90%;
+}
+
+/* Project Details Container */
+.residence-project-details-container {
+  margin-top: -200px;
+  padding: 1.375rem 1rem;
+  background: #ffffff;
+}
+
+.residence-back-button-wrapper {
+  max-width: 1400px;
+  margin: 0 auto 0 auto;
+}
+
+.residence-back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #ff9900;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.residence-back-button:hover {
+  background: #e68800;
+  transform: translateY(-1px);
+}
+
+.residence-back-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Project Info Section */
+.residence-project-info-section {
+  padding: 2rem 0;
+  background: #ffffff;
+}
+
+.residence-project-info-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.residence-project-info-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.residence-project-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+  font-family: "Playfair Display", serif;
+}
+
+.residence-project-description {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.residence-project-features {
+  margin-top: 2rem;
+}
+
+.residence-project-features-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.residence-project-quick-info {
+  background: #f8f9fa;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+}
+
+.residence-project-quick-info-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.residence-project-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.residence-project-info-item strong {
+  color: #333;
+}
+
+.residence-project-info-item p {
+  margin: 0.25rem 0;
+  color: #666;
+}
+
+/* Section Styles */
+.residence-section-white {
+  padding: 3rem 0;
+  background: #ffffff;
+}
+
+.residence-section-gray {
+  padding: 3rem 0;
+  background: #f8f9fa;
+}
+
+.residence-section-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Tablet Responsive */
+@media (max-width: 1024px) {
+  .residence-project-info-grid {
+    gap: 1.5rem;
+  }
+
+  .residence-project-title {
+    font-size: 2.2rem;
+  }
+
+  .residence-project-description {
+    font-size: 1rem;
+  }
+}
+
+/* Mobile Landscape */
+@media (max-width: 900px) {
+  .residence-project-info-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .residence-project-quick-info {
+    order: -1;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .residence-page {
+    padding-top: 5rem;
+  }
+
+  .residence-project-details-container {
+    margin-top: -100px;
+    padding: 1rem 0.75rem;
+  }
+
+  .residence-back-button {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  .residence-project-info-container {
+    padding: 0 0.75rem;
+  }
+
+  .residence-project-title {
+    font-size: 1.85rem;
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+  }
+
+  .residence-project-description {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .residence-project-features {
+    margin-top: 1.5rem;
+  }
+
+  .residence-project-features-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .residence-project-quick-info {
+    padding: 1.5rem;
+  }
+
+  .residence-project-quick-info-title {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .residence-project-info-list {
+    gap: 0.75rem;
+  }
+
+  .residence-project-info-item p {
+    font-size: 0.9rem;
+  }
+
+  .residence-section-white,
+  .residence-section-gray {
+    padding: 2rem 0;
+  }
+
+  .residence-loading-content {
+    padding: 1.5rem;
+  }
+
+  .residence-loading-content p {
+    font-size: 1rem;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .residence-page {
+    padding-top: 4.5rem;
+  }
+
+  .residence-project-details-container {
+    margin-top: -80px;
+    padding: 0.75rem 0.5rem;
+  }
+
+  .residence-back-button {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    gap: 0.4rem;
+  }
+
+  .residence-back-button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .residence-project-info-container {
+    padding: 0 0.5rem;
+  }
+
+  .residence-project-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .residence-project-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+  }
+
+  .residence-project-features {
+    margin-top: 1.25rem;
+  }
+
+  .residence-project-features-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .residence-project-quick-info {
+    padding: 1.25rem;
+    border-radius: 8px;
+  }
+
+  .residence-project-quick-info-title {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .residence-project-info-list {
+    gap: 0.65rem;
+  }
+
+  .residence-project-info-item strong {
+    font-size: 0.9rem;
+  }
+
+  .residence-project-info-item p {
+    font-size: 0.85rem;
+  }
+
+  .residence-section-white,
+  .residence-section-gray {
+    padding: 1.5rem 0;
+  }
+
+  .residence-section-container {
+    padding: 0 0.75rem;
+  }
+
+  .residence-loading-content {
+    padding: 1.25rem;
+  }
+
+  .residence-loading-content p {
+    font-size: 0.95rem;
+  }
+
+  .residence-loading-content > div {
+    width: 35px !important;
+    height: 35px !important;
+  }
+}
+
+/* Extra Small Mobile */
+@media (max-width: 380px) {
+  .residence-page {
+    padding-top: 4rem;
+  }
+
+  .residence-project-title {
+    font-size: 1.35rem;
+  }
+
+  .residence-project-description {
+    font-size: 0.85rem;
+  }
+
+  .residence-project-features-title {
+    font-size: 1rem;
+  }
+
+  .residence-back-button {
+    padding: 0.55rem 0.85rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* Contact Page Responsive Styles */
+.contact-page {
+  padding-top: 1rem;
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .contact-page {
+    padding-top: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-page {
+    padding-top: 0.25rem;
+  }
+}
+
+/* Contact Hero Section Mobile Improvements */
+@media (max-width: 768px) {
+  .contact-hero {
+    margin-top: 100px !important;
+    width: 98vw !important;
+    margin-left: -49vw !important;
+    margin-right: -49vw !important;
+    border-radius: 15px !important;
+  }
+
+  .contact-hero__social {
+    width: 100% !important;
+    margin-bottom: -60px !important;
+  }
+
+  .contact-hero__social-list {
+    padding: 0 0.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .contact-hero {
+    margin-top: 90px !important;
+    border-radius: 12px !important;
+  }
+
+  .contact-hero__social {
+    margin-bottom: -50px !important;
+  }
+
+  .contact-hero__social-list {
+    gap: 0.5rem !important;
+    padding: 0 0.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-hero {
+    margin-top: 80px !important;
+    width: 100vw !important;
+    margin-left: -50vw !important;
+    margin-right: -50vw !important;
+    border-radius: 10px !important;
+    padding: 1.25rem 0 !important;
+  }
+
+  .contact-hero__social {
+    margin-bottom: -40px !important;
+  }
+
+  .contact-hero__title {
+    font-size: 1.5rem !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .contact-hero {
+    margin-top: 70px !important;
+    padding: 1rem 0 !important;
+  }
+
+  .contact-hero__title {
+    font-size: 1.35rem !important;
+    padding: 0.5rem 1.25rem !important;
+  }
+
+  .contact-hero__social-link {
+    padding: 0.625rem !important;
+    font-size: 0.75rem !important;
+  }
+}

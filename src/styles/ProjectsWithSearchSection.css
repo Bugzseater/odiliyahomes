@@ -1,0 +1,472 @@
+.projects-with-search {
+  padding: 4rem 2rem;
+  background: #f5f5f5;
+}
+
+.projects-with-search__container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.projects-with-search__content {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 3rem;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .projects-with-search__content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .projects-with-search__search {
+    order: -1;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+}
+
+.projects-with-search__projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.projects-with-search__search {
+  position: sticky;
+  top: 2rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .projects-with-search__content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .projects-with-search__search {
+    position: static;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .projects-with-search__projects {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .projects-with-search {
+    padding: 2rem 1rem;
+  }
+
+  .projects-with-search__projects {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Custom layout for Lands page search section */
+.projects-with-search.lands-projects-search .projects-with-search__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.projects-with-search.lands-projects-search .projects-with-search__search {
+  position: static;
+  /* width: 100%; */
+  margin: 0 auto;
+  order: -1; /* Move search to top */
+}
+
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form {
+  display: flex;
+  flex-direction: row;
+  min-width: 1100px;
+  background: #fff;
+  border-radius: 40px;
+  /* padding-left: 10px; */
+  /* margin: 0 auto; */
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ff9900;
+  box-shadow: none;
+  gap: 30px;
+}
+
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__fields {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 0.75rem;
+  align-items: center;
+  margin: 0;
+  flex: 1 1 auto;
+}
+
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__field {
+  flex: 0 0 auto;
+  width: 200px;
+}
+
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__button {
+  flex: 0 0 auto;
+  max-width: 120px;
+  height: 44px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__agent {
+  display: flex;
+  width: 190px;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 0 0.5rem;
+  padding: 0.5rem 1.25rem 0.5rem 0.75rem;
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+  border-radius: 24px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+}
+
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__avatar {
+  width: 40px;
+  height: 40px;
+  background: #ddd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #666;
+  font-size: 12px;
+}
+
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__agent-info {
+  text-align: left;
+}
+
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__agent-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 2px 0;
+  color: #222;
+}
+
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__agent-role {
+  font-size: 0.7rem;
+  color: #666;
+  margin: 0;
+  letter-spacing: 0.25px;
+}
+
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__actions,
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__contact {
+  display: none;
+}
+
+/* Remove default stacked styles inside horizontal Lands form */
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__header {
+  display: none;
+}
+
+/* Field elements adopt pill style */
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__select,
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__input {
+  border-radius: 24px;
+  height: 44px;
+  padding: 0 18px;
+  border: 1px solid #ff9900;
+  background: #fff;
+  font-size: 0.85rem;
+}
+
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__select:focus,
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__input:focus {
+  outline: none;
+  border-color: #ff9900;
+  box-shadow: 0 0 0 2px rgba(255, 153, 0, 0.15);
+}
+
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__button {
+  background: #ff9900;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.25s;
+}
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__button:hover {
+  background: #e68800;
+}
+
+/* Dot icon replacement at far left */
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form::before {
+  content: "";
+  width: 28px;
+  height: 28px;
+  background: #ff9900;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(255, 153, 0, 0.35);
+}
+
+/* Adjust order so fields appear after pseudo icon */
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__fields {
+  order: 2;
+}
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__button {
+  order: 3;
+}
+.projects-with-search.lands-projects-search
+  .projects-with-search__search
+  .search-form__agent {
+  order: 4;
+}
+
+/* Responsive tweaks */
+@media (max-width: 1200px) {
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form {
+    flex-wrap: wrap;
+  }
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form__agent {
+    margin-left: 0;
+  }
+}
+@media (max-width: 900px) {
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form {
+    border-radius: 24px;
+  }
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form__field {
+    width: 100%;
+  }
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form__fields {
+    flex-wrap: wrap;
+  }
+}
+
+.projects-with-search.lands-projects-search .projects-with-search__projects {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.75rem;
+  order: 1;
+  max-width: 1150px; /* centers 3 columns nicely */
+  margin: 0 auto; /* center grid container */
+  justify-items: center; /* ensure cards themselves center inside track */
+}
+
+/* Also center the separate Lands projects section (if using OurProjectsSection with class .lands-projects) */
+.lands-projects .projects-grid, /* if grid class differs adjust accordingly */
+.lands-projects .projects-with-search__projects {
+  /* fallback if reused */
+  max-width: 1150px;
+  margin: 0 auto;
+  justify-items: center;
+}
+
+/* Responsive for lands search layout */
+@media (max-width: 1024px) {
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form {
+    min-width: auto;
+    max-width: 100%;
+    flex-direction: column;
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form__fields {
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 1rem;
+  }
+
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form__field {
+    flex: 1 1 calc(50% - 0.5rem);
+    min-width: 200px;
+  }
+
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form__button {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form__agent {
+    width: 100%;
+    max-width: 100%;
+    justify-content: center;
+  }
+
+  .projects-with-search.lands-projects-search .projects-with-search__projects {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form {
+    min-width: auto;
+    width: 100%;
+    padding: 1.5rem 1rem;
+    border-radius: 20px;
+  }
+
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form__fields {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+  }
+
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form__field {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form__select,
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form__input {
+    width: 100%;
+  }
+
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form__button {
+    width: 100%;
+    max-width: 100%;
+    height: 48px;
+    font-size: 1rem;
+  }
+
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form__agent {
+    width: 100%;
+    margin: 0;
+    padding: 1rem;
+  }
+
+  .projects-with-search.lands-projects-search .projects-with-search__projects {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form__select,
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form__input {
+    height: 46px;
+    font-size: 0.95rem;
+    padding: 0 14px;
+  }
+
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form__agent {
+    padding: 0.75rem;
+  }
+
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form__avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form__agent-name {
+    font-size: 0.85rem;
+  }
+
+  .projects-with-search.lands-projects-search
+    .projects-with-search__search
+    .search-form__agent-role {
+    font-size: 0.65rem;
+  }
+}

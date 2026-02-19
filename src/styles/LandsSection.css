@@ -1,0 +1,677 @@
+/* ====================================================================
+   LANDS SECTION - ENTERPRISE-LEVEL STYLING
+   Three-column layout with statistics, gallery, and information cards
+   ================================================================== */
+
+.lands-section {
+  position: relative;
+  padding: 4rem 0;
+  background: var(--text-white);
+  overflow: hidden;
+}
+
+/* Half-width green background */
+.lands-section::before {
+  content: "";
+  position: absolute;
+  top: 120px;
+  left: 0;
+  width: 40%;
+  /* height: calc(100% - 120px); */
+  height: 63.5%;
+  background: linear-gradient(135deg, var(--lands-green) 0%, #8fc968 100%);
+  z-index: 0;
+}
+
+/* Main Title - Above everything */
+.lands-section__main-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--lands-text-black);
+  font-family: poppins;
+  margin: 0 0 3rem 0;
+  line-height: 1.2;
+  text-align: left;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.lands-section__main-title--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.lands-section__container {
+  max-width: 1400px;
+  margin: 0 auto;
+  /* padding: 0 2rem; */
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 3rem;
+  height: 53%;
+  min-height: 450px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ====================================================================
+   LEFT PANEL - STATISTICS
+   ================================================================== */
+
+.lands-section__stats {
+  background: transparent;
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  transition-delay: 0.3s;
+}
+
+.lands-section__stats--visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.lands-section__stats-content {
+  position: relative;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lands-section__main-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.lands-section__number {
+  font-size: 4rem;
+  font-weight: 900;
+  color: var(--text-white);
+  line-height: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.lands-section__stat-label {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-white);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 0.5rem;
+}
+
+.lands-section__sold-out {
+  position: absolute;
+  right: -40px;
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  transform-origin: center;
+}
+
+.lands-section__sold-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--lands-green-text);
+  text-transform: uppercase;
+  transform: rotate(180deg);
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+
+.lands-section__brand {
+  position: absolute;
+  /* left: -30px; */
+  top: 40%;
+  transform: translateY(-50%) rotate(-90deg);
+  transform-origin: center;
+}
+
+.lands-section__brand-text {
+  font-size: 50px;
+  font-weight: 600;
+  color: var(--lands-green-text);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+}
+
+/* ====================================================================
+   COMBINED PANEL - PROJECTS WITH INFORMATION
+   ================================================================== */
+
+.lands-section__combined {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* gap: 2rem; */
+  margin-left: 50px;
+  margin-top: -40px;
+  width: 1000vw;
+}
+
+.lands-section__projects-list {
+  position: relative;
+  overflow: hidden;
+  height: 400px;
+  mask: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+}
+
+.lands-section__projects-scroll-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: scroll-lands-list 15s linear infinite;
+}
+
+.lands-section__projects-scroll-inner:hover {
+  animation-play-state: paused;
+}
+
+.lands-section__project-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1.5rem;
+  animation: slideInUp 0.6s ease-out var(--animation-delay, 0s) both;
+  align-items: center;
+}
+
+.lands-section__project-card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  height: 100px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lands-section__project-image {
+  width: 100%;
+  height: 100%;
+}
+
+.lands-section__project-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: none;
+}
+
+.lands-section__project-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.lands-section__project-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.9);
+  transition: filter 0.3s ease;
+}
+
+.lands-section__project-card:hover .lands-section__project-image {
+  filter: brightness(1);
+}
+
+.lands-section__project-label {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--lands-text-black);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.lands-section__project-card:hover .lands-section__project-label {
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-2px);
+}
+
+.lands-section__info-card {
+  background: var(--lands-gray);
+  /* border: 1px solid #e5e5e5; */
+  /* border-radius: 12px; */
+  padding: 1.5rem;
+  height: 100px;
+  width: calc(100% + 4rem);
+  /* margin-right: -4rem; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.lands-section__info-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.lands-section__info-card:hover::before {
+  transform: translateX(100%);
+}
+
+.lands-section__info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  border-color: var(--lands-green);
+}
+
+.lands-section__info-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--lands-text-black);
+  margin: 0 0 0.25rem 0;
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lands-section__info-title::after {
+  content: "→";
+  color: var(--lands-green-text);
+  font-weight: 400;
+}
+
+.lands-section__info-description {
+  font-size: 0.8rem;
+  color: #666;
+  line-height: 1.4;
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* ====================================================================
+   RESPONSIVE DESIGN
+   ================================================================== */
+
+@media (max-width: 1200px) {
+  .lands-section__container {
+    grid-template-columns: 250px 1fr;
+    gap: 2rem;
+  }
+
+  .lands-section__project-row {
+    grid-template-columns: 180px 1fr;
+    gap: 1.25rem;
+  }
+}
+@media (max-width: 768px) {
+  /* Move green background to top on mobile */
+  .lands-section::before {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 150px;
+    transform: none;
+  }
+
+  .lands-section__main-title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+    text-align: center;
+  }
+
+  .lands-section__container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 0 1rem;
+    height: auto;
+    min-height: auto;
+  }
+
+  .lands-section {
+    padding: 2rem 0;
+  }
+
+  /* Hide stats panel on mobile */
+  .lands-section__stats {
+    display: none;
+  }
+
+  .lands-section__combined {
+    margin-left: 0;
+    margin-top: 0;
+    width: 100%;
+    order: 1;
+  }
+
+  /* Restructure project row for mobile: image on top, info below */
+  .lands-section__project-row {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    gap: 1rem;
+  }
+
+  .lands-section__project-card {
+    height: 200px;
+    order: 1;
+    border-radius: 16px;
+  }
+
+  .lands-section__project-label {
+    bottom: 15px;
+    left: 15px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  .lands-section__info-card {
+    padding: 1.25rem;
+    height: auto;
+    min-height: auto;
+    width: 100%;
+    order: 2;
+    border-radius: 12px;
+  }
+
+  .lands-section__info-title {
+    font-size: 1rem;
+  }
+
+  .lands-section__info-description {
+    font-size: 0.85rem;
+  }
+
+  .lands-section__projects-list {
+    height: 500px;
+    mask: linear-gradient(
+      to bottom,
+      transparent 0%,
+      black 10%,
+      black 90%,
+      transparent 100%
+    );
+  }
+
+  .lands-section__projects-scroll-inner {
+    animation: scroll-lands-list 15s linear infinite;
+    gap: 1.5rem;
+  }
+
+  .lands-section__stats-text {
+    writing-mode: initial;
+    text-orientation: initial;
+    transform: none;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+}
+
+/* ====================================================================
+   ANIMATIONS
+   ================================================================== */
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ====================================================================
+   RESPONSIVE DESIGN
+   ================================================================== */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .lands-section__container {
+    grid-template-columns: 250px 1fr 350px;
+    gap: 2rem;
+  }
+
+  .lands-section__title {
+    font-size: 2rem;
+  }
+
+  .lands-section__number {
+    font-size: 3rem;
+  }
+}
+
+/* Small Tablet */
+@media (max-width: 768px) {
+  .lands-section__container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 3rem;
+  }
+
+  .lands-section__stats {
+    height: 200px;
+    order: 1;
+  }
+
+  .lands-section__gallery {
+    order: 2;
+  }
+
+  .lands-section__info {
+    order: 3;
+  }
+
+  .lands-section__title {
+    font-size: 1.75rem;
+    text-align: center;
+  }
+
+  .lands-section__projects {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+
+  .lands-section__sold-out {
+    right: -20px;
+  }
+
+  .lands-section__brand {
+    left: -20px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .lands-section {
+    padding: 1.5rem 0;
+  }
+
+  .lands-section::before {
+    height: 120px;
+  }
+
+  .lands-section__main-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .lands-section__container {
+    padding: 0 1rem;
+    gap: 1.5rem;
+  }
+
+  .lands-section__project-card {
+    height: 180px;
+    border-radius: 12px;
+  }
+
+  .lands-section__project-label {
+    bottom: 12px;
+    left: 12px;
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+
+  .lands-section__info-card {
+    padding: 1rem;
+  }
+
+  .lands-section__info-title {
+    font-size: 0.9rem;
+  }
+
+  .lands-section__info-description {
+    font-size: 0.8rem;
+  }
+
+  .lands-section__projects-scroll-inner {
+    gap: 1.25rem;
+  }
+
+  .lands-section__projects-list {
+    height: 450px;
+  }
+
+  .lands-section__number {
+    font-size: 2.5rem;
+  }
+
+  .lands-section__stat-label {
+    font-size: 1.25rem;
+  }
+}
+
+/* Extra small mobile */
+@media (max-width: 380px) {
+  .lands-section__main-title {
+    font-size: 1.5rem;
+  }
+
+  .lands-section::before {
+    height: 100px;
+  }
+
+  .lands-section__project-card {
+    height: 160px;
+  }
+
+  .lands-section__info-card {
+    padding: 0.875rem;
+  }
+
+  .lands-section__info-title {
+    font-size: 0.85rem;
+  }
+
+  .lands-section__info-description {
+    font-size: 0.75rem;
+  }
+}
+
+/* ====================================================================
+   ACCESSIBILITY
+   ================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .lands-section__project-card,
+  .lands-section__info-card {
+    animation: none;
+  }
+
+  .lands-section__project-card:hover,
+  .lands-section__info-card:hover {
+    transform: none;
+  }
+
+  .lands-section__projects-scroll-inner {
+    animation: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .lands-section__info-card {
+    border: 2px solid var(--lands-text-black);
+  }
+
+  .lands-section__card-title {
+    color: var(--lands-text-black);
+  }
+}
+
+/* ====================================================================
+   SCROLLING ANIMATION KEYFRAMES
+   ================================================================== */
+
+@keyframes scroll-lands-list {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}

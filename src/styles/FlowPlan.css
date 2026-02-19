@@ -1,0 +1,311 @@
+/* FlowPlan Component Styles */
+.flow-plan-container {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin: 2rem 0;
+  max-width: 100%;
+}
+
+.flow-plan-header {
+  margin-bottom: 1.5rem;
+}
+
+.flow-plan-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #000000;
+  margin: 0;
+  text-align: center;
+}
+
+/* Main Floor Plan Display */
+.flow-plan-main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.flow-plan-image-container {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: #f8f9fa;
+}
+
+.flow-plan-image {
+  width: 100%;
+  height: auto;
+  max-height: 500px;
+  object-fit: contain;
+  display: block;
+  background: #ffffff;
+}
+
+/* Navigation Arrows */
+.flow-plan-nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #333;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+}
+
+.flow-plan-nav-arrow:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.flow-plan-nav-prev {
+  left: 1rem;
+}
+
+.flow-plan-nav-next {
+  right: 1rem;
+}
+
+/* Plan Information */
+.flow-plan-info {
+  padding: 1rem 0;
+}
+
+.flow-plan-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+}
+
+.flow-plan-description {
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* Plan Details */
+.flow-plan-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  justify-content: center;
+}
+
+.flow-plan-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(240, 240, 240, 0.6) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #333;
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  min-width: 120px;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.flow-plan-detail-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: #555;
+}
+
+.flow-plan-detail-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.flow-plan-detail-text {
+  font-weight: 500;
+}
+
+/* Plan Indicators */
+.flow-plan-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.flow-plan-indicator {
+  width: 50px;
+  height: 40px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: #f8f9fa;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.flow-plan-indicator:hover {
+  border-color: #ff9900;
+  transform: scale(1.05);
+}
+
+.flow-plan-indicator--active {
+  border-color: #ff9900;
+  box-shadow: 0 2px 8px rgba(255, 153, 0, 0.3);
+}
+
+.flow-plan-indicator-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.flow-plan-indicator-number {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #666;
+}
+
+.flow-plan-indicator--active .flow-plan-indicator-number {
+  color: #ff9900;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .flow-plan-container {
+    padding: 1.25rem;
+  }
+
+  .flow-plan-main {
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .flow-plan-container {
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+
+  .flow-plan-title {
+    font-size: 1.3rem;
+  }
+
+  .flow-plan-image {
+    max-height: 400px;
+  }
+
+  .flow-plan-nav-arrow {
+    width: 40px;
+    height: 40px;
+  }
+
+  .flow-plan-nav-prev {
+    left: 0.5rem;
+  }
+
+  .flow-plan-nav-next {
+    right: 0.5rem;
+  }
+
+  .flow-plan-details {
+    gap: 0.5rem;
+  }
+
+  .flow-plan-detail-item {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+    min-width: 100px;
+  }
+
+  .flow-plan-indicators {
+    gap: 0.4rem;
+  }
+
+  .flow-plan-indicator {
+    width: 45px;
+    height: 35px;
+  }
+}
+
+@media (max-width: 480px) {
+  .flow-plan-container {
+    padding: 0.75rem;
+  }
+
+  .flow-plan-title {
+    font-size: 1.2rem;
+  }
+
+  .flow-plan-image {
+    max-height: 300px;
+  }
+
+  .flow-plan-nav-arrow {
+    width: 36px;
+    height: 36px;
+  }
+
+  .flow-plan-detail-item {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.7rem;
+    min-width: 90px;
+  }
+
+  .flow-plan-indicator {
+    width: 40px;
+    height: 30px;
+  }
+}
+
+/* Loading States */
+.flow-plan-container.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.flow-plan-container.loading .flow-plan-image {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

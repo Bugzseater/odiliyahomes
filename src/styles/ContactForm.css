@@ -1,0 +1,246 @@
+/* Contact Form Component Styles */
+.contact-form-section {
+  /* padding: 60px 0 40px; */
+  background-color: #000000;
+  width: 50vw;
+  margin-left: calc(50% - 25vw);
+  margin-top: 30px;
+  margin-bottom: -50px;
+}
+
+.contact-form-container {
+  /* max-width: 1200px; */
+  margin: 0 auto;
+  /* padding: 0 40px; */
+}
+
+.contact-form-wrapper {
+  background-color: #000000;
+  /* border: 2px dashed #3498db; */
+  /* border-radius: 12px; */
+  padding: 10px;
+  text-align: center;
+  position: relative;
+}
+
+.contact-form-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.contact-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.contact-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.contact-form-input {
+  width: 100%;
+  padding: 15px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: white;
+  color: #333;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.contact-form-input::placeholder {
+  color: #999;
+  font-weight: 400;
+}
+
+.contact-form-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #3498db;
+  transform: translateY(-2px);
+}
+
+.contact-form-submit {
+  background-color: #f39c12;
+  color: white;
+  padding: 15px 40px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.contact-form-submit:hover {
+  background-color: #e67e22;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .contact-form-container {
+    padding: 0 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-form-section {
+    padding: 2.5rem 0 2rem;
+    width: 90vw;
+    margin-left: calc(50% - 45vw);
+    margin-top: 1.5rem;
+    margin-bottom: -2rem;
+  }
+
+  .contact-form-container {
+    padding: 0 1rem;
+  }
+
+  .contact-form-wrapper {
+    padding: 2rem 1.5rem;
+  }
+
+  .contact-form-title {
+    font-size: 1.85rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .contact-form {
+    max-width: 100%;
+  }
+
+  .contact-form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .contact-form-input {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  .contact-form-submit {
+    width: 100%;
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-form-section {
+    padding: 2rem 0 1.5rem;
+    width: 95vw;
+    margin-left: calc(50% - 47.5vw);
+    margin-top: 1rem;
+  }
+
+  .contact-form-container {
+    padding: 0 1rem;
+  }
+
+  .contact-form-wrapper {
+    padding: 1.5rem 1rem;
+  }
+
+  .contact-form-title {
+    font-size: 1.65rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .contact-form-grid {
+    gap: 0.875rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .contact-form-input {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 6px;
+  }
+
+  .contact-form-submit {
+    width: 100%;
+    padding: 0.75rem 2rem;
+    font-size: 0.95rem;
+    border-radius: 6px;
+  }
+}
+
+/* Extra small mobile */
+@media (max-width: 380px) {
+  .contact-form-section {
+    width: 98vw;
+    margin-left: calc(50% - 49vw);
+  }
+
+  .contact-form-wrapper {
+    padding: 1.25rem 0.875rem;
+  }
+
+  .contact-form-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .contact-form-grid {
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .contact-form-input {
+    padding: 0.65rem 0.875rem;
+    font-size: 0.85rem;
+  }
+
+  .contact-form-submit {
+    padding: 0.65rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Animation for form interactions */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.contact-form-wrapper {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .contact-form-wrapper {
+    border-color: #ffffff;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .contact-form-input,
+  .contact-form-submit {
+    transition: none;
+  }
+
+  .contact-form-wrapper {
+    animation: none;
+  }
+}

@@ -1,0 +1,181 @@
+.search-form {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.search-form__header {
+  margin-bottom: 1.5rem;
+}
+
+.search-form__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  color: #000000;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-form__title::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: #ff9900;
+  border-radius: 50%;
+}
+
+.search-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.search-form__field {
+  position: relative;
+}
+
+.search-form__select,
+.search-form__input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e5e5;
+  color: #000000;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: #fff;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.search-form__select:focus,
+.search-form__input:focus {
+  outline: none;
+  border-color: #ff9900;
+}
+
+.search-form__select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+.search-form__button {
+  width: 100%;
+  padding: 12px;
+  background: #ff9900;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.search-form__button:hover {
+  background: #e68800;
+}
+
+.search-form__contact {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.search-form__contact-text {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.search-form__agent {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-top: 1px solid #e5e5e5;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.search-form__agent:hover {
+  background: #f8f9fa;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.search-form__avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.search-form__agent-info {
+  flex: 1;
+}
+
+.search-form__agent-name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: #333;
+}
+
+.search-form__agent-role {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0;
+}
+
+.search-form__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.search-form__whatsapp,
+.search-form__contact-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.search-form__whatsapp {
+  background: #25d366;
+  color: #fff;
+}
+
+.search-form__whatsapp:hover {
+  background: #1ea952;
+}
+
+.search-form__contact-btn {
+  background: #333;
+  color: #fff;
+}
+
+.search-form__contact-btn:hover {
+  background: #555;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-form {
+    max-width: 100%;
+    margin: 1rem;
+  }
+}

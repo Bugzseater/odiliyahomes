@@ -1,0 +1,243 @@
+/* ===========================
+   Project Progress Component Styles
+   =========================== */
+
+.project-progress {
+  padding: 0;
+  background: transparent;
+}
+
+.project-progress__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* ===========================
+   Title Styles
+   =========================== */
+
+.project-progress__title {
+  font-size: 2rem;
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
+  text-align: left;
+  margin-bottom: 3rem;
+  color: #000000;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #000000;
+}
+
+/* ===========================
+   Layout - Thumbnails Left, Main Viewer Right
+   =========================== */
+
+.project-progress__layout {
+  display: grid;
+  grid-template-columns: 1fr 10fr;
+  gap: 5px;
+  align-items: start;
+}
+
+/* ===========================
+   Thumbnail Grid Styles (Left Side)
+   =========================== */
+
+.project-progress__thumbnails {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(2, 1fr);
+  gap: 1rem;
+  max-height: 100%;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+/* Custom scrollbar for thumbnails */
+.project-progress__thumbnails::-webkit-scrollbar {
+  width: 6px;
+}
+
+.project-progress__thumbnails::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.project-progress__thumbnails::-webkit-scrollbar-thumb {
+  background: #667eea;
+  border-radius: 10px;
+}
+
+.project-progress__thumbnails::-webkit-scrollbar-thumb:hover {
+  background: #764ba2;
+}
+
+.project-progress__thumbnail {
+  position: relative;
+  width: 50%;
+  height: 100%;
+  /* min-height: 180px; */
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 3px solid transparent;
+}
+
+.project-progress__thumbnail:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.project-progress__thumbnail--active {
+  border-color: #667eea;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+}
+
+.project-progress__thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.project-progress__thumbnail:hover .project-progress__thumbnail-image {
+  transform: scale(1.05);
+}
+
+/* ===========================
+   Main Viewer Styles (Right Side)
+   =========================== */
+
+.project-progress__main-viewer {
+  width: 100%;
+  position: relative;
+  background: #f8f9fa;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.project-progress__main-image {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  max-height: 400px;
+  object-fit: cover;
+  display: block;
+  background: #fff;
+}
+
+.project-progress__main-caption {
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  text-align: center;
+  font-size: 0.95rem;
+  color: #555;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* ===========================
+   Placeholder Styles
+   =========================== */
+
+.project-progress__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: #f0f0f0;
+  color: #999;
+}
+
+.project-progress__placeholder--main {
+  min-height: 400px;
+}
+
+.project-progress__placeholder-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 0.5rem;
+}
+
+.project-progress__thumbnail .project-progress__placeholder-icon {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 0;
+}
+
+.project-progress__placeholder p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+/* ===========================
+   Empty State
+   =========================== */
+
+.project-progress__empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #666;
+  font-size: 1rem;
+}
+
+/* ===========================
+   Responsive Styles
+   =========================== */
+
+@media (max-width: 768px) {
+  .project-progress__title {
+    font-size: 1.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .project-progress__layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .project-progress__thumbnails {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.75rem;
+    order: 2;
+  }
+
+  .project-progress__main-viewer {
+    order: 1;
+  }
+
+  .project-progress__main-image {
+    min-height: 300px;
+    max-height: 400px;
+  }
+
+  .project-progress__main-caption {
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .project-progress__title {
+    font-size: 1.5rem;
+  }
+
+  .project-progress__main-image {
+    min-height: 250px;
+    max-height: 300px;
+  }
+
+  .project-progress__thumbnails {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .project-progress__placeholder--main {
+    min-height: 250px;
+  }
+}
