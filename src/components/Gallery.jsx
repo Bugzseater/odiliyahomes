@@ -1,32 +1,44 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { db } from "../firebaseConfig"; // ඔයාගේ firebase path එක බලන්න
+import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import "../styles/Gallery.css";
 
 const Gallery = () => {
-  // Flat array of all gallery images
-  const allImages = [
-    "https://img.freepik.com/free-photo/plowed-field-after-harvesting-grain-crops-arable-land-resting-bright-sunny-afternoon-valley-mountains-concept-farm-work-growing-natural-products_166373-8670.jpg?semt=ais_hybrid&w=740&q=80",
-    "https://img.freepik.com/free-photo/plowed-field-after-harvesting-grain-crops-arable-land-resting-bright-sunny-afternoon-valley-mountains-concept-farm-work-growing-natural-products_166373-8670.jpg?semt=ais_hybrid&w=740&q=80",
-    "https://img.freepik.com/free-photo/plowed-field-after-harvesting-grain-crops-arable-land-resting-bright-sunny-afternoon-valley-mountains-concept-farm-work-growing-natural-products_166373-8670.jpg?semt=ais_hybrid&w=740&q=80",
-    "https://img.freepik.com/free-photo/plowed-field-after-harvesting-grain-crops-arable-land-resting-bright-sunny-afternoon-valley-mountains-concept-farm-work-growing-natural-products_166373-8670.jpg?semt=ais_hybrid&w=740&q=80",
-    "https://img.freepik.com/free-photo/plowed-field-after-harvesting-grain-crops-arable-land-resting-bright-sunny-afternoon-valley-mountains-concept-farm-work-growing-natural-products_166373-8670.jpg?semt=ais_hybrid&w=740&q=80",
-    "https://img.freepik.com/free-photo/plowed-field-after-harvesting-grain-crops-arable-land-resting-bright-sunny-afternoon-valley-mountains-concept-farm-work-growing-natural-products_166373-8670.jpg?semt=ais_hybrid&w=740&q=80",
-    "https://img.freepik.com/free-photo/plowed-field-after-harvesting-grain-crops-arable-land-resting-bright-sunny-afternoon-valley-mountains-concept-farm-work-growing-natural-products_166373-8670.jpg?semt=ais_hybrid&w=740&q=80",
-    "https://img.freepik.com/free-photo/plowed-field-after-harvesting-grain-crops-arable-land-resting-bright-sunny-afternoon-valley-mountains-concept-farm-work-growing-natural-products_166373-8670.jpg?semt=ais_hybrid&w=740&q=80",
-    "https://img.freepik.com/free-photo/plowed-field-after-harvesting-grain-crops-arable-land-resting-bright-sunny-afternoon-valley-mountains-concept-farm-work-growing-natural-products_166373-8670.jpg?semt=ais_hybrid&w=740&q=80",
-    "https://img.freepik.com/free-photo/plowed-field-after-harvesting-grain-crops-arable-land-resting-bright-sunny-afternoon-valley-mountains-concept-farm-work-growing-natural-products_166373-8670.jpg?semt=ais_hybrid&w=740&q=80",
-    "https://img.freepik.com/free-photo/plowed-field-after-harvesting-grain-crops-arable-land-resting-bright-sunny-afternoon-valley-mountains-concept-farm-work-growing-natural-products_166373-8670.jpg?semt=ais_hybrid&w=740&q=80",
-    "https://img.freepik.com/free-photo/plowed-field-after-harvesting-grain-crops-arable-land-resting-bright-sunny-afternoon-valley-mountains-concept-farm-work-growing-natural-products_166373-8670.jpg?semt=ais_hybrid&w=740&q=80",
-    "https://img.freepik.com/free-photo/plowed-field-after-harvesting-grain-crops-arable-land-resting-bright-sunny-afternoon-valley-mountains-concept-farm-work-growing-natural-products_166373-8670.jpg?semt=ais_hybrid&w=740&q=80",
-    "https://img.freepik.com/free-photo/plowed-field-after-harvesting-grain-crops-arable-land-resting-bright-sunny-afternoon-valley-mountains-concept-farm-work-growing-natural-products_166373-8670.jpg?semt=ais_hybrid&w=740&q=80",
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Firestore එකෙන් images load කර ගැනීම
+  useEffect(() => {
+    const q = query(collection(db, "gallery"), orderBy("createdAt", "desc"));
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const imageUrls = snapshot.docs.map(doc => doc.data().url);
+      setImages(imageUrls);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // දත්ත ලැබෙන තුරු පෙන්වන placeholder images (දත්ත නැතිනම් පමණක්)
+  const placeholderImages = [
+    "https://img.freepik.com/free-photo/plowed-field-after-harvesting-grain-crops-arable-land-resting-bright-sunny-afternoon-valley-mountains-concept-farm-work-growing-natural-products_166373-8670.jpg?w=740"
   ];
 
-  // Split into two rows - top and bottom
-  const topRowImages = allImages.slice(0, 10);
-  const bottomRowImages = allImages.slice(10);
+  const displayImages = images.length > 0 ? images : placeholderImages;
 
-  // Duplicate for seamless loop
+  // Images ප්‍රමාණය අනුව පේළි දෙකට බෙදා ගැනීම
+  const half = Math.ceil(displayImages.length / 2);
+  const topRowImages = displayImages.slice(0, half);
+  const bottomRowImages = displayImages.slice(half);
+
+  // Seamless loop එක සඳහා images double කිරීම
   const topRowLoop = [...topRowImages, ...topRowImages];
   const bottomRowLoop = [...bottomRowImages, ...bottomRowImages];
+
+  if (loading && images.length === 0) {
+    return <div className="gallery-section text-center py-20 text-gray-400">Loading Gallery...</div>;
+  }
 
   return (
     <section className="gallery-section">
@@ -49,6 +61,7 @@ const Gallery = () => {
                       src={image}
                       alt={`Gallery top ${index + 1}`}
                       className="gallery-image"
+                      loading="lazy"
                     />
                   </div>
                 </div>
@@ -68,6 +81,7 @@ const Gallery = () => {
                       src={image}
                       alt={`Gallery bottom ${index + 1}`}
                       className="gallery-image"
+                      loading="lazy"
                     />
                   </div>
                 </div>

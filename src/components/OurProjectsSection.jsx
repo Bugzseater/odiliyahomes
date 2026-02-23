@@ -75,10 +75,6 @@ export default function OurProjectsSection({
               >
                 <div className="our-projects-card-overlay">
                   <h3 className="our-projects-card-title">{project.name}</h3>
-                  <p
-                    className="our-projects-card-desc"
-                    dangerouslySetInnerHTML={{ __html: project.description }}
-                  ></p>
                 </div>
               </div>
             </div>

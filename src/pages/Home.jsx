@@ -81,7 +81,7 @@ export default function Home() {
       <LandsSection />
       <Gallery />
       <NewsSection
-        image="https://res.cloudinary.com/dswr94sjy/image/upload/v1766306704/img1_0_xyeveu.jpg"
+        image="#"
         title="Upcoming News"
         newsTitle="Odiliya Groundbreaking"
         description="ICON Galle Breaks Ground : A Landmark of Luxury and Wellness Living by Odiliya Residencies."
