@@ -13,13 +13,6 @@ import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
 import avatar from "@/assets/Odiliyalogo.png";
 
-// Remove static data imports
-// import {
-//   projectDetailsData,
-//   projectsData,
-//   featuredProjects,
-// } from "@/data/projectsData";
-
 const createSlug = (name) => {
   return name
     .toLowerCase()
@@ -42,9 +35,9 @@ export default function Residence() {
   const navigate = useNavigate();
 
   // ========== FIREBASE STATES ==========
-  const [allProjects, setAllProjects] = useState([]); // OurProjectsSection සඳහා
-  const [featuredProjects, setFeaturedProjects] = useState([]); // ProjectsWithSearchSection සඳහා
-  const [projectDetailsMap, setProjectDetailsMap] = useState({}); // Project details map (id එකෙන් ගන්න)
+  const [allProjects, setAllProjects] = useState([]);
+  const [featuredProjects, setFeaturedProjects] = useState([]);
+  const [projectDetailsMap, setProjectDetailsMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
 
@@ -75,19 +68,20 @@ export default function Residence() {
         querySnapshot.forEach((doc) => {
           const data = doc.data();
           
-          // Format for OurProjectsSection
+          // Check if project is ICON
+          const isIcon = data.name && data.name.toUpperCase().includes("ICON");
+          
           const formattedProject = {
             id: doc.id,
             name: data.name || "Untitled",
             title: data.name || "Untitled",
             description: data.description || "",
-            image: data.image || heroImg,
+            image: data.images?.[0]?.src || data.image || heroImg,
             category: data.category || "Apartments",
             location: data.location || "",
             price: data.price || "",
             area: data.area || "",
             availability: data.availability || "Available",
-            // Full details for project page
             images: data.images || [],
             mapEmbedUrl: data.mapEmbedUrl || "",
             propertyAdvisor: data.propertyAdvisor || {
@@ -101,13 +95,13 @@ export default function Residence() {
             faqs: data.faqs || [],
             virtualTours: data.virtualTours || [],
             brochureUrl: data.brochureUrl || "",
-            heroTitle: data.heroTitle || data.name || ""
+            heroTitle: data.heroTitle || data.name || "",
+            isIcon: isIcon
           };
           
           projectsList.push(formattedProject);
           featuredList.push(formattedProject);
           
-          // Store in details map for quick access by ID
           detailsMap[doc.id] = {
             ...formattedProject,
             slug: data.slug || createSlug(data.name || "")
@@ -119,6 +113,7 @@ export default function Residence() {
         setProjectDetailsMap(detailsMap);
         
         console.log(`✅ Loaded ${projectsList.length} projects from Firebase`);
+        console.log("ICON Projects:", projectsList.filter(p => p.isIcon).length);
         
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -131,15 +126,69 @@ export default function Residence() {
     fetchProjects();
   }, []);
 
-  // ========== FILTERED PROJECTS (based on category and search) ==========
+  // ========== FILTERED PROJECTS FOR OUR PROJECTS SECTION ==========
+  const ourProjectsFiltered = useMemo(() => {
+    if (allProjects.length === 0) return [];
+    
+    const categoryName = CATEGORIES[activeCategory];
+    
+    console.log(`🎯 Active Category: ${categoryName}`);
+    
+    return allProjects.filter((project) => {
+      // Check if project name contains ICON
+      const isIcon = project.name && project.name.toUpperCase().includes("ICON");
+      
+      // APARTMENTS category
+      if (categoryName === "Apartments") {
+        // Show ALL projects that are:
+        // 1. Category is "Apartments", OR
+        // 2. Name contains "ICON" (regardless of category)
+        return project.category === "Apartments" || isIcon;
+      }
+      
+      // RESIDENCIES category
+      if (categoryName === "Residencies") {
+        // Show ONLY projects with category "Residencies" AND NOT ICON
+        return project.category === "Residencies" && !isIcon;
+      }
+      
+      // ROI PROJECTS category
+      if (categoryName === "ROI Projects") {
+        // Show only ROI Projects (ICON projects not in ROI normally)
+        return project.category === "ROI Projects";
+      }
+      
+      // Default: show by category
+      return project.category === categoryName;
+    });
+  }, [allProjects, activeCategory]);
+
+  // ========== FILTERED PROJECTS FOR SEARCH SECTION ==========
   const filteredFeaturedProjects = useMemo(() => {
     if (featuredProjects.length === 0) return [];
     
     const categoryName = CATEGORIES[activeCategory];
-    const baseProjects = featuredProjects.filter(
-      (project) => project.category === categoryName
-    );
+    
+    // First filter by category and special rules
+    const baseProjects = featuredProjects.filter((project) => {
+      const isIcon = project.name && project.name.toUpperCase().includes("ICON");
+      
+      if (categoryName === "Apartments") {
+        return project.category === "Apartments" || isIcon;
+      }
+      
+      if (categoryName === "Residencies") {
+        return project.category === "Residencies" && !isIcon;
+      }
+      
+      if (categoryName === "ROI Projects") {
+        return project.category === "ROI Projects";
+      }
+      
+      return project.category === categoryName;
+    });
 
+    // Then apply search filters
     const { projectName, location, status } = searchFilters;
     const normalizedName = projectName.trim().toLowerCase();
     const normalizedLocation = location.trim().toLowerCase();
@@ -164,16 +213,32 @@ export default function Residence() {
     });
   }, [activeCategory, searchFilters, featuredProjects]);
 
-  // ========== SEARCH OPTIONS (for dropdowns) ==========
+  // ========== SEARCH OPTIONS ==========
   const searchOptions = useMemo(() => {
     if (featuredProjects.length === 0) {
       return { status: [], location: [], projectName: [] };
     }
     
     const categoryName = CATEGORIES[activeCategory];
-    const categoryProjects = featuredProjects.filter(
-      (project) => project.category === categoryName
-    );
+    
+    // Apply same filtering for search options
+    const categoryProjects = featuredProjects.filter((project) => {
+      const isIcon = project.name && project.name.toUpperCase().includes("ICON");
+      
+      if (categoryName === "Apartments") {
+        return project.category === "Apartments" || isIcon;
+      }
+      
+      if (categoryName === "Residencies") {
+        return project.category === "Residencies" && !isIcon;
+      }
+      
+      if (categoryName === "ROI Projects") {
+        return project.category === "ROI Projects";
+      }
+      
+      return project.category === categoryName;
+    });
 
     const unique = (items) =>
       Array.from(new Set(items.filter((item) => item && item.trim())));
@@ -282,7 +347,6 @@ export default function Residence() {
 
   const handleCategoryChange = (categoryIndex) => {
     setActiveCategory(categoryIndex);
-    // Reset search filters when category changes
     setSearchFilters({
       projectName: "",
       location: "",
@@ -404,23 +468,23 @@ export default function Residence() {
         {!showProjectDetails ? (
           <>
             {/* Our Projects Section */}
-            {allProjects.length > 0 ? (
+            {ourProjectsFiltered.length > 0 ? (
               <OurProjectsSection
                 title="OUR PROJECTS"
                 categories={CATEGORIES}
-                projects={allProjects}
+                projects={ourProjectsFiltered}
                 defaultCategory={activeCategory}
                 onProjectClick={handleProjectClick}
                 onCategoryChange={handleCategoryChange}
               />
             ) : (
               <div className="text-center py-12">
-                <p className="text-gray-500">No projects available</p>
+                <p className="text-gray-500">No projects available in this category</p>
               </div>
             )}
 
             {/* Search Section */}
-            {featuredProjects.length > 0 ? (
+            {filteredFeaturedProjects.length > 0 ? (
               <ProjectsWithSearchSection
                 projects={filteredFeaturedProjects}
                 searchProps={{
@@ -437,7 +501,7 @@ export default function Residence() {
               />
             ) : (
               <div className="text-center py-12">
-                <p className="text-gray-500">No featured projects available</p>
+                <p className="text-gray-500">No projects match your search criteria</p>
               </div>
             )}
           </>
@@ -502,7 +566,6 @@ export default function Residence() {
                         {selectedProject.name}
                       </h1>
                       
-                      {/* Description with HTML content */}
                       <div 
                         className="residence-project-description prose max-w-none"
                         dangerouslySetInnerHTML={{ 
@@ -510,7 +573,6 @@ export default function Residence() {
                         }} 
                       />
 
-                      {/* Amenities */}
                       {selectedProject.amenities && selectedProject.amenities.length > 0 && (
                         <div className="residence-project-features">
                           <h3 className="residence-project-features-title">
@@ -526,7 +588,6 @@ export default function Residence() {
                         </div>
                       )}
 
-                      {/* Virtual Tours */}
                       {selectedProject.virtualTours && selectedProject.virtualTours.length > 0 && (
                         <div className="residence-project-virtual-tours mt-8">
                           <h3 className="text-xl font-bold mb-4">Virtual Tours</h3>
@@ -632,7 +693,6 @@ export default function Residence() {
                         )}
                       </div>
 
-                      {/* FAQs */}
                       {selectedProject.faqs && selectedProject.faqs.length > 0 && (
                         <div className="mt-6">
                           <h4 className="font-semibold mb-3">Frequently Asked Questions</h4>

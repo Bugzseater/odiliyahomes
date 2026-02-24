@@ -1,5 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { db } from "../firebaseConfig";
+import { collection, getDocs } from "firebase/firestore";
 import MainNavbar from "@/components/MainNavbar";
 import HeroImg from "@/assets/images/icon.png";
 import IconHeroSection from "@/components/SubPageHeroSection";
@@ -17,6 +19,10 @@ import villa4 from "@/assets/images/projects/galle/g_06.jpeg";
 import galleimg from "@/assets/images/projects/galle/g_01.jpeg";
 
 export default function Icon() {
+  const [iconProjects, setIconProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
   useEffect(() => {
     document.title = "ICON by Odiliya Homes | Investment Plan | Real Estate Investment Opportunities";
     const metaDescription = document.querySelector('meta[name="description"]');
@@ -33,10 +39,95 @@ export default function Icon() {
     metaKeywords.content = "investment plan,real estate investment oppotunities";
   }, []);
 
-  const navigate = useNavigate();
+  // Fetch projects from Firebase
+  useEffect(() => {
+    const fetchIconProjects = async () => {
+      try {
+        // Fetch from projectDetails collection
+        const projectsSnapshot = await getDocs(collection(db, "projectDetails"));
+        const projects = projectsSnapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            name: data.name || "",
+            description: data.description || "",
+            image: data.images?.[0]?.src || data.image || "",
+            category: "All Projects",
+            location: data.location || "",
+            price: data.price || ""
+          };
+        });
+
+        // Fetch from landProjects collection (if any lands with ICON)
+        const landsSnapshot = await getDocs(collection(db, "landProjects"));
+        const lands = landsSnapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            name: data.name || "",
+            description: data.description || "",
+            image: data.images?.[0]?.src || data.image || "",
+            category: "All Projects",
+            location: data.location || "",
+            price: data.price || ""
+          };
+        });
+
+        // Combine all projects
+        const allProjects = [...projects, ...lands];
+        
+        // Filter projects that have "ICON" in the name (case insensitive)
+        const filtered = allProjects.filter(project => 
+          project.name && project.name.toUpperCase().includes("ICON")
+        );
+        
+        console.log("ICON Projects found:", filtered.length);
+        setIconProjects(filtered);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        
+        // Fallback to static data if Firebase fails
+        const fallbackProjects = [
+          {
+            id: 18,
+            name: "ICON V TALPE",
+            description: "Nestled along the southern coast, Icon V Talpe is a signature beachfront residence where luxury meets oceanfront serenity.",
+            image: villa1,
+            category: "All Projects",
+          },
+          {
+            id: 16,
+            name: "ICON MIRISSA",
+            description: "Exclusive villa for sale Sri Lanka at ICON Mirissa. Luxury coastal living with full management and strong rental returns.",
+            image: img1,
+            category: "All Projects",
+          },
+          {
+            id: 17,
+            name: "ICON GALLE",
+            description: "Luxury villa for sale in Galle at ICON Galle. Riverfront wellness living from Rs. 29M with flexible payment plans and strong investment returns.",
+            image: galleimg,
+            category: "All Projects",
+          },
+        ];
+        setIconProjects(fallbackProjects);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchIconProjects();
+  }, []);
 
   const handleProjectClick = (project) => {
-    navigate(`/residence?project=${project.id}&showDetails=true`);
+    navigate(`/project-details/${project.slug || project.id}`, {
+      state: {
+        projectId: project.id,
+        source: "icon-page",
+        dataSource: project.source || "projects",
+        projectDetails: project
+      }
+    });
   };
 
   const mainContentData = {
@@ -90,12 +181,13 @@ export default function Icon() {
     },
   ];
 
-  const projectsData = [
+  // Use iconProjects if available, otherwise use static data
+  const projectsToShow = iconProjects.length > 0 ? iconProjects : [
     {
       id: 18,
       name: "ICON V TALPE",
       description: "Nestled along the southern coast, Icon V Talpe is a signature beachfront residence where luxury meets oceanfront serenity.",
-      image: "#",
+      image: villa1,
       category: "All Projects",
     },
     {
@@ -145,14 +237,22 @@ export default function Icon() {
           imageGalleryStyle="stacked"
           className="icon-page-content"
         />
-        <OurProjectsSection
-          title="ICON PROJECTS"
-          categories={["All Projects"]}
-          projects={projectsData}
-          defaultCategory={0}
-          className="icon-page-projects"
-          onProjectClick={handleProjectClick}
-        />
+        
+        {/* Loading state */}
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '50px' }}>
+            <p>Loading ICON projects...</p>
+          </div>
+        ) : (
+          <OurProjectsSection
+            title="ICON PROJECTS"
+            categories={["All Projects"]}
+            projects={projectsToShow}
+            defaultCategory={0}
+            className="icon-page-projects"
+            onProjectClick={handleProjectClick}
+          />
+        )}
       </main>
       <ContactForm />
       <Footer />
