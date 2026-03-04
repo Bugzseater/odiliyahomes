@@ -1,43 +1,76 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { db } from "../firebaseConfig"; // ඔයාගේ firebase path එක නිවැරදිදැයි බලන්න
+import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 import "../styles/NewsSection.css";
 
-/**
- * NewsSection Component
- *
- * To customize which news shows on home page:
- * 1. Go to src/pages/Home.jsx
- * 2. Update handleNewsButtonClick() with the news ID you want
- * 3. Example: navigate("/news?newsId=2") for news with id: 2
- * 4. The news data is in src/pages/News.jsx (sampleNewsData array)
- */
-const NewsSection = ({
-  image = "https://res.cloudinary.com/dswr94sjy/image/upload/v1760434760/Altezza-Apartments-Wattala-Completed-03_xkbory.jpg",
-  title = "Latest News",
-  newsTitle = "Phasellus Elit Facilisis Volutpat Etiam.",
-  description = "At Aliquet Viverra Placerat Enim Semper Nulla Ut Auctor Habitasse. Urna Pretium Cursus Commodo Cursus Phasellus Elit Facilisis Volutpat Etiam.",
-  buttonText = "More Info",
-  onButtonClick,
-}) => {
+const NewsSection = () => {
+  const [latestNews, setLatestNews] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Firestore එකෙන් අලුත්ම news එක විතරක් ගේනවා
+    const q = query(
+      collection(db, "news"), 
+      orderBy("createdAt", "desc"), 
+      limit(1)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        const doc = snapshot.docs[0];
+        setLatestNews({ id: doc.id, ...doc.data() });
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Button එක Click කළාම News Page එකට යනවා (ID එකත් එක්ක)
+  const handleMoreInfo = () => {
+    if (latestNews) {
+      navigate(`/news?newsId=${latestNews.id}`);
+    }
+  };
+
+  if (loading) return null; // Load වෙන වෙලාවට හිස්ව තබයි
+
+  // දත්ත නැතිනම් පෙන්වන Default දත්ත
+  const displayData = latestNews || {
+    image: "#",
+    title: "Latest News",
+    newsTitle: "No news published yet.",
+    excerpt: "Check back later for our latest updates and stories.",
+  };
+
   return (
     <section className="news-section">
       <div className="news-container">
         {/* Left Side - Image */}
         <div className="news-image-side">
           <div className="news-image-container">
-            <img src={image} alt="News announcement" className="news-image" />
+            <img 
+              src={displayData.image} 
+              alt="News announcement" 
+              className="news-image" 
+            />
           </div>
         </div>
 
         {/* Right Side - Content */}
         <div className="news-content-side">
           <div className="news-content">
-            <h2 className="news-section-title">{title}</h2>
+            <h2 className="news-section-title">Latest News</h2>
 
             <div className="news-card">
-              <h3 className="news-title">{newsTitle}</h3>
-              <p className="news-description">{description}</p>
-              <button className="news-button" onClick={onButtonClick}>
-                {buttonText}
+              <h3 className="news-title">{displayData.title || displayData.newsTitle}</h3>
+              <p className="news-description">
+                {displayData.excerpt || displayData.description}
+              </p>
+              <button className="news-button" onClick={handleMoreInfo}>
+                More Info
               </button>
             </div>
           </div>

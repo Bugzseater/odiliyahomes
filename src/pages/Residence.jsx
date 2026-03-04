@@ -1,19 +1,17 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { db } from "../firebaseConfig";
+import { collection, getDocs } from "firebase/firestore";
 
 import MainNavbar from "@/components/MainNavbar";
 import ResidenceHeroSection from "@/components/SubPageHeroSection";
 import OurProjectsSection from "@/components/OurProjectsSection";
 import ProjectsWithSearchSection from "@/components/ProjectsWithSearchSection";
+import ProjectDetailsHero from "@/components/ProjectDetailsHero";
 import heroImg from "@/assets/images/panadura01.png";
 import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
 import avatar from "@/assets/Odiliyalogo.png";
-import {
-  projectDetailsData,
-  projectsData,
-  featuredProjects,
-} from "@/data/projectsData";
 
 const createSlug = (name) => {
   return name
@@ -27,40 +25,170 @@ const createSlug = (name) => {
 const CATEGORIES = ["Apartments", "Residencies", "ROI Projects"];
 
 const CATEGORY_HERO_MEDIA = {
-  0: {
-    type: "video",
-    src: "#",
-  },
-  1: {
-    type: "video",
-    src: "#",
-  },
-  2: {
-    type: "video",
-    src: "#",
-  },
+  0: { type: "video", src: "#" },
+  1: { type: "video", src: "#" },
+  2: { type: "video", src: "#" },
 };
 
 export default function Residence() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
+  // ========== FIREBASE STATES ==========
+  const [allProjects, setAllProjects] = useState([]);
+  const [featuredProjects, setFeaturedProjects] = useState([]);
+  const [projectDetailsMap, setProjectDetailsMap] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
+
+  // ========== UI STATES ==========
   const [showProjectDetails, setShowProjectDetails] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [activeCategory, setActiveCategory] = useState(0);
-  const [isLoading, _setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchFilters, setSearchFilters] = useState({
     projectName: "",
     location: "",
     status: "",
   });
 
-  const filteredFeaturedProjects = useMemo(() => {
-    const categoryName = CATEGORIES[activeCategory];
-    const baseProjects = featuredProjects.filter(
-      (project) => project.category === categoryName,
-    );
+  // ========== FETCH DATA FROM FIREBASE ==========
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        setFetchError(null);
+        
+        const querySnapshot = await getDocs(collection(db, "projectDetails"));
+        
+        const projectsList = [];
+        const featuredList = [];
+        const detailsMap = {};
+        
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          
+          // Check if project is ICON
+          const isIcon = data.name && data.name.toUpperCase().includes("ICON");
+          
+          const formattedProject = {
+            id: doc.id,
+            name: data.name || "Untitled",
+            title: data.name || "Untitled",
+            description: data.description || "",
+            image: data.images?.[0]?.src || data.image || heroImg,
+            category: data.category || "Apartments",
+            location: data.location || "",
+            price: data.price || "",
+            area: data.area || "",
+            availability: data.availability || "Available",
+            images: data.images || [],
+            mapEmbedUrl: data.mapEmbedUrl || "",
+            propertyAdvisor: data.propertyAdvisor || {
+              name: "Odiliya Agent",
+              title: "Property Advisor",
+              phone: "94717508899",
+              email: "info@odiliya.lk",
+              avatar: avatar
+            },
+            amenities: data.amenities || [],
+            faqs: data.faqs || [],
+            virtualTours: data.virtualTours || [],
+            brochureUrl: data.brochureUrl || "",
+            heroTitle: data.heroTitle || data.name || "",
+            isIcon: isIcon
+          };
+          
+          projectsList.push(formattedProject);
+          featuredList.push(formattedProject);
+          
+          detailsMap[doc.id] = {
+            ...formattedProject,
+            slug: data.slug || createSlug(data.name || "")
+          };
+        });
+        
+        setAllProjects(projectsList);
+        setFeaturedProjects(featuredList);
+        setProjectDetailsMap(detailsMap);
+        
+        console.log(`✅ Loaded ${projectsList.length} projects from Firebase`);
+        console.log("ICON Projects:", projectsList.filter(p => p.isIcon).length);
+        
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        setFetchError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProjects();
+  }, []);
 
+  // ========== FILTERED PROJECTS FOR OUR PROJECTS SECTION ==========
+  const ourProjectsFiltered = useMemo(() => {
+    if (allProjects.length === 0) return [];
+    
+    const categoryName = CATEGORIES[activeCategory];
+    
+    console.log(`🎯 Active Category: ${categoryName}`);
+    
+    return allProjects.filter((project) => {
+      // Check if project name contains ICON
+      const isIcon = project.name && project.name.toUpperCase().includes("ICON");
+      
+      // APARTMENTS category
+      if (categoryName === "Apartments") {
+        // Show ALL projects that are:
+        // 1. Category is "Apartments", OR
+        // 2. Name contains "ICON" (regardless of category)
+        return project.category === "Apartments" || isIcon;
+      }
+      
+      // RESIDENCIES category
+      if (categoryName === "Residencies") {
+        // Show ONLY projects with category "Residencies" AND NOT ICON
+        return project.category === "Residencies" && !isIcon;
+      }
+      
+      // ROI PROJECTS category
+      if (categoryName === "ROI Projects") {
+        // Show only ROI Projects (ICON projects not in ROI normally)
+        return project.category === "ROI Projects";
+      }
+      
+      // Default: show by category
+      return project.category === categoryName;
+    });
+  }, [allProjects, activeCategory]);
+
+  // ========== FILTERED PROJECTS FOR SEARCH SECTION ==========
+  const filteredFeaturedProjects = useMemo(() => {
+    if (featuredProjects.length === 0) return [];
+    
+    const categoryName = CATEGORIES[activeCategory];
+    
+    // First filter by category and special rules
+    const baseProjects = featuredProjects.filter((project) => {
+      const isIcon = project.name && project.name.toUpperCase().includes("ICON");
+      
+      if (categoryName === "Apartments") {
+        return project.category === "Apartments" || isIcon;
+      }
+      
+      if (categoryName === "Residencies") {
+        return project.category === "Residencies" && !isIcon;
+      }
+      
+      if (categoryName === "ROI Projects") {
+        return project.category === "ROI Projects";
+      }
+      
+      return project.category === categoryName;
+    });
+
+    // Then apply search filters
     const { projectName, location, status } = searchFilters;
     const normalizedName = projectName.trim().toLowerCase();
     const normalizedLocation = location.trim().toLowerCase();
@@ -75,7 +203,7 @@ export default function Residence() {
         ? title.includes(normalizedName)
         : true;
       const locationMatches = normalizedLocation
-        ? projectLocation === normalizedLocation
+        ? projectLocation.includes(normalizedLocation)
         : true;
       const statusMatches = normalizedStatus
         ? projectStatus === normalizedStatus
@@ -83,13 +211,34 @@ export default function Residence() {
 
       return nameMatches && locationMatches && statusMatches;
     });
-  }, [activeCategory, searchFilters]);
+  }, [activeCategory, searchFilters, featuredProjects]);
 
+  // ========== SEARCH OPTIONS ==========
   const searchOptions = useMemo(() => {
+    if (featuredProjects.length === 0) {
+      return { status: [], location: [], projectName: [] };
+    }
+    
     const categoryName = CATEGORIES[activeCategory];
-    const categoryProjects = featuredProjects.filter(
-      (project) => project.category === categoryName,
-    );
+    
+    // Apply same filtering for search options
+    const categoryProjects = featuredProjects.filter((project) => {
+      const isIcon = project.name && project.name.toUpperCase().includes("ICON");
+      
+      if (categoryName === "Apartments") {
+        return project.category === "Apartments" || isIcon;
+      }
+      
+      if (categoryName === "Residencies") {
+        return project.category === "Residencies" && !isIcon;
+      }
+      
+      if (categoryName === "ROI Projects") {
+        return project.category === "ROI Projects";
+      }
+      
+      return project.category === categoryName;
+    });
 
     const unique = (items) =>
       Array.from(new Set(items.filter((item) => item && item.trim())));
@@ -98,109 +247,60 @@ export default function Residence() {
       status: unique(categoryProjects.map((project) => project.availability)),
       location: unique(categoryProjects.map((project) => project.location)),
       projectName: unique(
-        categoryProjects.map((project) => project.title || project.name || ""),
+        categoryProjects.map((project) => project.title || project.name || "")
       ),
     };
-  }, [activeCategory]);
+  }, [activeCategory, featuredProjects]);
 
-  useEffect(() => {
-    let metaDescription = document.querySelector('meta[name="description"]');
-    if (!metaDescription) {
-      metaDescription = document.createElement("meta");
-      metaDescription.name = "description";
-      document.head.appendChild(metaDescription);
-    }
-
-    if (showProjectDetails && selectedProject) {
-      document.title = `${selectedProject.name} - Apartment for Sale in Sri Lanka | Odiliya Residencies | Odiliya Homes`;
-      metaDescription.content = `${selectedProject.description?.substring(0, 160)}...`;
-    } else {
-      const categoryTitles = {
-        0: "Apartment for Sale in Sri Lanka | Odiliya Residencies | Odiliya Homes",
-        1: "Apartment for Sale in Sri Lanka | Odiliya Residencies",
-        2: "Exclusive Villas in Sri Lanka | Odiliya Properties",
-      };
-
-      const categoryDescriptions = {
-        0: "Odiliya Homes presents Odiliya Residencies, featuring stylish apartment for sale in Sri Lanka designed to elevate your lifestyle and property investment.",
-        1: "Explore luxury houses for sale in Sri Lanka. Spacious family homes with elegant designs, private gardens, and premium finishes. Find your dream house with Odiliya Properties.",
-        2: "Experience exclusive villa living in Sri Lanka. Luxury villas with world-class amenities, stunning architecture, and unparalleled privacy in premium locations. Browse our prestigious villa collection.",
-      };
-
-      document.title =
-        categoryTitles[activeCategory] ||
-        "Premium Residences in Sri Lanka | Odiliya Properties";
-
-      metaDescription.content =
-        categoryDescriptions[activeCategory] ||
-        "Browse premium residences in Sri Lanka including apartments, houses, and villas. Quality real estate developments by Odiliya Properties with modern amenities and premium locations.";
-    }
-
-    return () => {
-      document.title = "Odiliya Properties - Premium Real Estate";
-    };
-  }, [showProjectDetails, selectedProject, activeCategory]);
-
-  useEffect(() => {
-    const categoryParam = searchParams.get("category");
-
-    if (categoryParam !== null) {
-      const categoryIndex = parseInt(categoryParam, 10);
-
-      if (categoryIndex >= 0 && categoryIndex < CATEGORIES.length) {
-        setActiveCategory(categoryIndex);
-      }
-
-      const newSearchParams = new URLSearchParams(searchParams);
-      newSearchParams.delete("category");
-      setSearchParams(newSearchParams, { replace: true });
-    }
-  }, [searchParams, setSearchParams]);
-
+  // ========== URL PARAMETERS CHECK ==========
   useEffect(() => {
     const projectId = searchParams.get("project");
     const shouldShowDetails = searchParams.get("showDetails") === "true";
 
-    if (projectId && shouldShowDetails) {
-      const projectDetails = projectDetailsData[projectId];
-      if (projectDetails) {
-        const slug = projectDetails.slug || createSlug(projectDetails.name);
-        navigate(`/project-details/${slug}`, {
-          state: {
-            projectId: projectId,
-            project: { id: projectId },
-            projectDetails: projectDetails,
-            source: "residence-url",
-            dataSource: "projects",
-          },
-        });
-      }
+    if (projectId && shouldShowDetails && projectDetailsMap[projectId]) {
+      const projectDetails = projectDetailsMap[projectId];
+      const slug = projectDetails.slug || createSlug(projectDetails.name);
+      
+      navigate(`/project-details/${slug}`, {
+        state: {
+          projectId: projectId,
+          project: { id: projectId },
+          projectDetails: projectDetails,
+          source: "residence-url",
+          dataSource: "firebase",
+        },
+      });
     }
-  }, [searchParams, navigate]);
+  }, [searchParams, navigate, projectDetailsMap]);
 
-  const handleProjectClick = async (project) => {
+  // ========== HANDLE PROJECT CLICK ==========
+  const handleProjectClick = (project) => {
     if (!project || !project.id) {
       console.error("Invalid project data:", project);
       return;
     }
 
     console.log("Project clicked:", project);
+    setIsLoading(true);
 
-    const projectDetails = projectDetailsData[project.id];
+    const projectDetails = projectDetailsMap[project.id];
     const slug =
       projectDetails?.slug ||
       project.slug ||
       createSlug(project.name || projectDetails?.name);
 
-    navigate(`/project-details/${slug}`, {
-      state: {
-        projectId: project.id,
-        project: project,
-        projectDetails: projectDetails || null,
-        source: "residence",
-        dataSource: "projects",
-      },
-    });
+    setTimeout(() => {
+      navigate(`/project-details/${slug}`, {
+        state: {
+          projectId: project.id,
+          project: project,
+          projectDetails: projectDetails || null,
+          source: "residence",
+          dataSource: "firebase",
+        },
+      });
+      setIsLoading(false);
+    }, 300);
   };
 
   const handleBackToProjects = () => {
@@ -209,10 +309,11 @@ export default function Residence() {
     setSearchParams({});
   };
 
+  // ========== CONTACT BUTTONS ==========
   const getContactButtons = (advisor) => [
     {
       label: "WhatsApp",
-      url: `https://wa.me/${advisor.phone.replace(/[^0-9]/g, "")}?text=Hi, I'm interested in ${selectedProject?.name}`,
+      url: `https://wa.me/${(advisor.whatsappPhone || advisor.phone).replace(/[^0-9]/g, "")}?text=Hi, I'm interested in ${selectedProject?.name || "this project"}`,
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.89 3.488" />
@@ -246,6 +347,11 @@ export default function Residence() {
 
   const handleCategoryChange = (categoryIndex) => {
     setActiveCategory(categoryIndex);
+    setSearchFilters({
+      projectName: "",
+      location: "",
+      status: "",
+    });
   };
 
   const handleSearch = (searchData) => {
@@ -257,20 +363,60 @@ export default function Residence() {
   };
 
   const handleProjectMoreInfo = (project) => {
-    console.log("Featured project more info clicked:", project);
-
     if (!project) {
-      console.error("No project data provided to handleProjectMoreInfo");
+      console.error("No project data provided");
       return;
     }
-
     handleProjectClick(project);
   };
+
+  // ========== LOADING STATE ==========
+  if (loading) {
+    return (
+      <>
+        <MainNavbar />
+        <main className="residence-page">
+          <div className="min-h-[60vh] flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-16 h-16 border-4 border-gray-200 border-t-4 border-t-orange-500 rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-gray-600 text-lg">Loading projects...</p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
+  // ========== ERROR STATE ==========
+  if (fetchError) {
+    return (
+      <>
+        <MainNavbar />
+        <main className="residence-page">
+          <div className="min-h-[60vh] flex items-center justify-center">
+            <div className="text-center bg-red-50 p-8 rounded-2xl">
+              <p className="text-red-600 text-xl mb-2">❌ Error loading data</p>
+              <p className="text-gray-600">{fetchError}</p>
+              <button 
+                onClick={() => window.location.reload()}
+                className="mt-4 px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
       <MainNavbar />
       <main className="residence-page">
+        {/* Hero Section */}
         <ResidenceHeroSection
           key={activeCategory}
           mediaType={CATEGORY_HERO_MEDIA[activeCategory]?.type || "image"}
@@ -291,6 +437,7 @@ export default function Residence() {
           description="Residencies by Odiliya, Shaping the future of luxury investment living in Sri Lanka. Our premium apartments are designed to deliver unparalleled living experiences combined with long-term financial growth. With Odiliya Residencies, you're not just buying property, you're investing in a future of wellness, lifestyle, and income."
         />
 
+        {/* Loading Overlay */}
         {isLoading && (
           <div className="residence-loading-overlay">
             <div className="residence-loading-content">
@@ -317,34 +464,50 @@ export default function Residence() {
           </div>
         )}
 
+        {/* Main Content */}
         {!showProjectDetails ? (
           <>
-            <OurProjectsSection
-              title="OUR PROJECTS"
-              categories={CATEGORIES}
-              projects={projectsData}
-              defaultCategory={activeCategory}
-              onProjectClick={handleProjectClick}
-              onCategoryChange={handleCategoryChange}
-            />
+            {/* Our Projects Section */}
+            {ourProjectsFiltered.length > 0 ? (
+              <OurProjectsSection
+                title="OUR PROJECTS"
+                categories={CATEGORIES}
+                projects={ourProjectsFiltered}
+                defaultCategory={activeCategory}
+                onProjectClick={handleProjectClick}
+                onCategoryChange={handleCategoryChange}
+              />
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-500">No projects available in this category</p>
+              </div>
+            )}
 
-            <ProjectsWithSearchSection
-              projects={filteredFeaturedProjects}
-              searchProps={{
-                title: `Find Your ${CATEGORIES[activeCategory]}...`,
-                searchOptions,
-                contactInfo: {
-                  name: "Odiliya Agent",
-                  role: "Property Advisor",
-                  avatar: avatar,
-                },
-              }}
-              onSearch={handleSearch}
-              onProjectMoreInfo={handleProjectMoreInfo}
-            />
+            {/* Search Section */}
+            {filteredFeaturedProjects.length > 0 ? (
+              <ProjectsWithSearchSection
+                projects={filteredFeaturedProjects}
+                searchProps={{
+                  title: `Find Your ${CATEGORIES[activeCategory]}...`,
+                  searchOptions,
+                  contactInfo: {
+                    name: "Odiliya Agent",
+                    role: "Property Advisor",
+                    avatar: avatar,
+                  },
+                }}
+                onSearch={handleSearch}
+                onProjectMoreInfo={handleProjectMoreInfo}
+              />
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-500">No projects match your search criteria</p>
+              </div>
+            )}
           </>
         ) : (
-          <>
+          /* Project Details View */
+          selectedProject && (
             <div className="residence-project-details-container">
               <div className="residence-back-button-wrapper">
                 <button
@@ -379,124 +542,176 @@ export default function Residence() {
                 </button>
               </div>
 
-              {selectedProject && (
-                <ProjectDetailsHero
-                  images={selectedProject.images}
-                  mapEmbedUrl={selectedProject.mapEmbedUrl}
-                  propertyAdvisor={selectedProject.propertyAdvisor}
-                  contactButtons={getContactButtons(
-                    selectedProject.propertyAdvisor,
-                  )}
-                  showThumbnails={true}
-                  showNavigation={true}
-                  imageAspectRatio="16/9"
-                  className="residence-project-details"
-                />
-              )}
+              {/* Project Details Hero */}
+              <ProjectDetailsHero
+                images={selectedProject.images || []}
+                mapEmbedUrl={selectedProject.mapEmbedUrl}
+                propertyAdvisor={selectedProject.propertyAdvisor}
+                contactButtons={getContactButtons(
+                  selectedProject.propertyAdvisor,
+                )}
+                showThumbnails={true}
+                showNavigation={true}
+                imageAspectRatio="16/9"
+                className="residence-project-details"
+              />
 
-              {selectedProject && (
-                <section className="residence-project-info-section">
-                  <div className="residence-project-info-container">
-                    <div className="residence-project-info-grid">
-                      <div>
-                        <h1 className="residence-project-title">
-                          {selectedProject.name}
-                        </h1>
-                        <p className="residence-project-description">
-                          {selectedProject.description}
-                        </p>
+              {/* Project Info Section */}
+              <section className="residence-project-info-section">
+                <div className="residence-project-info-container">
+                  <div className="residence-project-info-grid">
+                    {/* Left Column */}
+                    <div>
+                      <h1 className="residence-project-title">
+                        {selectedProject.name}
+                      </h1>
+                      
+                      <div 
+                        className="residence-project-description prose max-w-none"
+                        dangerouslySetInnerHTML={{ 
+                          __html: selectedProject.description || 'No description available' 
+                        }} 
+                      />
 
+                      {selectedProject.amenities && selectedProject.amenities.length > 0 && (
                         <div className="residence-project-features">
                           <h3 className="residence-project-features-title">
                             Features And Amenities
                           </h3>
                           <ul className="amenity-pills">
-                            <li className="amenity-pill">
-                              <span className="icon">□</span> 2533 SQ FT
-                            </li>
-                            <li className="amenity-pill">
-                              <span className="icon">A</span> 5 Beds
-                            </li>
-                            <li className="amenity-pill">
-                              <span className="icon">🏷</span> 6 Bathroom
-                            </li>
-                            <li className="amenity-pill">
-                              <span className="icon">□</span> AC
-                            </li>
-                            <li className="amenity-pill">
-                              <span className="icon">□</span> Balcony
-                            </li>
-                            <li className="amenity-pill">
-                              <span className="icon">□</span> Bathroom end
-                            </li>
+                            {selectedProject.amenities.map((item, idx) => (
+                              <li key={idx} className="amenity-pill">
+                                <span className="icon">✓</span> {item.name || item}
+                              </li>
+                            ))}
                           </ul>
                         </div>
-                      </div>
+                      )}
 
-                      <div className="residence-project-quick-info">
-                        <h3 className="residence-project-quick-info-title">
-                          Project Information
-                        </h3>
-                        <div className="residence-project-info-list">
-                          <div className="residence-project-info-item">
-                            <strong>Location:</strong>
-                            <p>{selectedProject.location}</p>
+                      {selectedProject.virtualTours && selectedProject.virtualTours.length > 0 && (
+                        <div className="residence-project-virtual-tours mt-8">
+                          <h3 className="text-xl font-bold mb-4">Virtual Tours</h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {selectedProject.virtualTours.map((tour, idx) => (
+                              <div key={idx} className="bg-gray-50 rounded-xl p-4">
+                                {tour.thumbnail && (
+                                  <img 
+                                    src={tour.thumbnail} 
+                                    alt={tour.description}
+                                    className="w-full h-40 object-cover rounded-lg mb-3"
+                                  />
+                                )}
+                                <h4 className="font-semibold mb-2">{tour.description}</h4>
+                                <p className="text-sm text-gray-600 mb-2">Duration: {tour.duration}</p>
+                                <a 
+                                  href={tour.video}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:underline text-sm"
+                                >
+                                  Watch Video →
+                                </a>
+                                {tour.details && tour.details.length > 0 && (
+                                  <ul className="mt-2 text-sm text-gray-600">
+                                    {tour.details.map((detail, i) => (
+                                      <li key={i}>• {detail.text}</li>
+                                    ))}
+                                  </ul>
+                                )}
+                              </div>
+                            ))}
                           </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Right Column - Quick Info */}
+                    <div className="residence-project-quick-info">
+                      <h3 className="residence-project-quick-info-title">
+                        Project Information
+                      </h3>
+                      <div className="residence-project-info-list">
+                        <div className="residence-project-info-item">
+                          <strong>Location:</strong>
+                          <p>{selectedProject.location || "N/A"}</p>
+                        </div>
+                        <div className="residence-project-info-item">
+                          <strong>Property Type:</strong>
+                          <p>{selectedProject.category || "Residential Development"}</p>
+                        </div>
+                        <div className="residence-project-info-item">
+                          <strong>Units Available:</strong>
+                          <p>Multiple Options</p>
+                        </div>
+                        <div className="residence-project-info-item">
+                          <strong>Starting Price:</strong>
+                          <p
+                            style={{
+                              color: "#ff9900",
+                              fontSize: "1.1rem",
+                              fontWeight: "600",
+                            }}
+                          >
+                            {selectedProject.price || "Contact for Pricing"}
+                          </p>
+                        </div>
+                        {selectedProject.area && (
                           <div className="residence-project-info-item">
-                            <strong>Property Type:</strong>
-                            <p>Residential Development</p>
+                            <strong>Area:</strong>
+                            <p>{selectedProject.area}</p>
                           </div>
+                        )}
+                        {selectedProject.availability && (
                           <div className="residence-project-info-item">
-                            <strong>Units Available:</strong>
-                            <p>Multiple Options</p>
-                          </div>
-                          <div className="residence-project-info-item">
-                            <strong>Starting Price:</strong>
+                            <strong>Availability:</strong>
                             <p
                               style={{
-                                color: "#ff9900",
-                                fontSize: "1.1rem",
-                                fontWeight: "600",
+                                color: selectedProject.availability === "Available"
+                                  ? "#28a745"
+                                  : "#666",
+                                fontWeight: selectedProject.availability === "Available"
+                                  ? "600"
+                                  : "normal",
                               }}
                             >
-                              {selectedProject.price
-                                ? `$${selectedProject.price}`
-                                : "Contact for Pricing"}
+                              {selectedProject.availability}
                             </p>
                           </div>
-                          {selectedProject.area && (
-                            <div className="residence-project-info-item">
-                              <strong>Area:</strong>
-                              <p>{selectedProject.area}</p>
-                            </div>
-                          )}
-                          {selectedProject.availability && (
-                            <div className="residence-project-info-item">
-                              <strong>Availability:</strong>
-                              <p
-                                style={{
-                                  color:
-                                    selectedProject.availability === "Available"
-                                      ? "#28a745"
-                                      : "#666",
-                                  fontWeight:
-                                    selectedProject.availability === "Available"
-                                      ? "600"
-                                      : "normal",
-                                }}
-                              >
-                                {selectedProject.availability}
-                              </p>
-                            </div>
-                          )}
-                        </div>
+                        )}
+                        {selectedProject.brochureUrl && (
+                          <div className="residence-project-info-item">
+                            <strong>Brochure:</strong>
+                            <a 
+                              href={selectedProject.brochureUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline block mt-1"
+                            >
+                              Download Brochure
+                            </a>
+                          </div>
+                        )}
                       </div>
+
+                      {selectedProject.faqs && selectedProject.faqs.length > 0 && (
+                        <div className="mt-6">
+                          <h4 className="font-semibold mb-3">Frequently Asked Questions</h4>
+                          <div className="space-y-3">
+                            {selectedProject.faqs.map((faq, idx) => (
+                              <div key={idx} className="bg-gray-50 p-3 rounded-lg">
+                                <p className="font-medium text-sm mb-1">Q: {faq.question}</p>
+                                <p className="text-sm text-gray-600">A: {faq.answer}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
-                </section>
-              )}
+                </div>
+              </section>
             </div>
-          </>
+          )
         )}
       </main>
       <ContactForm />
