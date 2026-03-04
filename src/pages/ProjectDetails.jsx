@@ -21,6 +21,7 @@ export default function ProjectDetails() {
   const navigate = useNavigate();
   const [firestoreData, setFirestoreData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [imageErrors, setImageErrors] = useState({});
 
   const {
     projectDetails,
@@ -68,11 +69,14 @@ export default function ProjectDetails() {
     const fetchFirestoreData = async () => {
       try {
         if (currentProject?.id) {
+          console.log("🔍 Fetching Firestore data for ID:", currentProject.id);
           const docRef = doc(db, "projectDetails", currentProject.id);
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
             console.log("🔥 Firestore Raw Data:", docSnap.data());
             setFirestoreData(docSnap.data());
+          } else {
+            console.log("❌ No Firestore document found");
           }
         }
       } catch (error) {
@@ -90,16 +94,40 @@ export default function ProjectDetails() {
   // Use Firestore data if available
   const displayProject = firestoreData || currentProject;
 
+  // Debug images
+  useEffect(() => {
+    if (displayProject) {
+      console.log("📸 Display Project:", displayProject.name);
+      console.log("📸 Main Image:", displayProject.image);
+      console.log("📸 Gallery Images:", displayProject.images);
+      console.log("📸 Floor Plans:", displayProject.floorPlans);
+      
+      // Test main image
+      if (displayProject.image) {
+        console.log("Testing main image:", displayProject.image);
+        const img = new Image();
+        img.onload = () => console.log("✅ Main image loaded");
+        img.onerror = () => console.log("❌ Main image failed to load");
+        img.src = displayProject.image;
+      }
+      
+      // Test gallery images
+      if (displayProject.images && displayProject.images.length > 0) {
+        displayProject.images.forEach((img, index) => {
+          console.log(`Testing gallery image ${index}:`, img.src || img);
+          const testImg = new Image();
+          testImg.onload = () => console.log(`✅ Gallery image ${index} loaded`);
+          testImg.onerror = () => console.log(`❌ Gallery image ${index} failed to load`);
+          testImg.src = img.src || img;
+        });
+      }
+    }
+  }, [displayProject]);
+
   // Transform floor plans data for FlowPlan component
   const transformedFloorPlans = displayProject?.floorPlans?.map(plan => ({
-    // FlowPlan component එක බලාපොරොත්තු වෙන format එකට transform කරන්න
-    // උදාහරණයක් විදිහට FlowPlan එක 'title' හෝ 'name' field එක බලාපොරොත්තු වෙනවා නම්:
-    title: plan.name,  // or plan.title depending on what FlowPlan expects
+    title: plan.name,
     image: plan.image,
-    // FlowPlan එක 'src' field එක බලාපොරොත්තු වෙනවා නම්:
-    // src: plan.image,
-    // FlowPlan එක 'url' field එක බලාපොරොත්තු වෙනවා නම්:
-    // url: plan.image,
   }));
 
   console.log("Original Floor Plans:", displayProject?.floorPlans);
@@ -188,6 +216,13 @@ export default function ProjectDetails() {
     }
   };
 
+  const handleImageError = (imageUrl, type = 'image') => {
+    console.log(`❌ ${type} failed to load:`, imageUrl);
+    setImageErrors(prev => ({ ...prev, [imageUrl]: true }));
+    // Return fallback image URL
+    return 'https://via.placeholder.com/800x600?text=Image+Not+Available';
+  };
+
   if (!displayProject) return <div className="p-20 text-center">Loading Project Details...</div>;
 
   return (
@@ -220,6 +255,7 @@ export default function ProjectDetails() {
             showNavigation={true}
             imageAspectRatio="16/9"
             className="project-details-main"
+            onImageError={handleImageError}
           />
         </div>
 
@@ -369,7 +405,6 @@ export default function ProjectDetails() {
             <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
               <h2 style={{ textAlign: 'center', marginBottom: '2rem', color: '#333' }}>Floor Plans</h2>
               
-
               <FlowPlan
                 title="Floor Plans"
                 plans={transformedFloorPlans}

@@ -17,15 +17,30 @@ export default function ProjectGallery({
 }) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [imageErrors, setImageErrors] = useState({});
+
+  // Debug received props
+  useEffect(() => {
+    console.log("🖼️ [ProjectGallery] Received props:");
+    console.log("   - title:", title);
+    console.log("   - images array:", images);
+    console.log("   - images length:", images?.length);
+    if (images && images.length > 0) {
+      console.log("   - first image:", images[0]);
+      console.log("   - first image src:", images[0]?.src || images[0]);
+    }
+  }, [images, title]);
 
   // Handle lightbox navigation
   const openLightbox = (index) => {
+    console.log("🔍 Opening lightbox at index:", index);
     setSelectedImageIndex(index);
     setIsLightboxOpen(true);
     document.body.style.overflow = "hidden"; // Prevent background scrolling
   };
 
   const closeLightbox = () => {
+    console.log("🔍 Closing lightbox");
     setIsLightboxOpen(false);
     setSelectedImageIndex(null);
     document.body.style.overflow = "unset"; // Restore scrolling
@@ -33,22 +48,28 @@ export default function ProjectGallery({
 
   const nextImage = () => {
     if (selectedImageIndex !== null) {
-      setSelectedImageIndex((prev) => 
-        prev === images.length - 1 ? 0 : prev + 1
-      );
+      const nextIndex = selectedImageIndex === images.length - 1 ? 0 : selectedImageIndex + 1;
+      console.log("🔍 Next image:", nextIndex);
+      setSelectedImageIndex(nextIndex);
     }
   };
 
   const prevImage = () => {
     if (selectedImageIndex !== null) {
-      setSelectedImageIndex((prev) => 
-        prev === 0 ? images.length - 1 : prev - 1
-      );
+      const prevIndex = selectedImageIndex === 0 ? images.length - 1 : selectedImageIndex - 1;
+      console.log("🔍 Previous image:", prevIndex);
+      setSelectedImageIndex(prevIndex);
     }
   };
 
   const goToImage = (index) => {
+    console.log("🔍 Go to image:", index);
     setSelectedImageIndex(index);
+  };
+
+  const handleImageError = (imageUrl, type = 'gallery') => {
+    console.log(`❌ [ProjectGallery] Image failed to load (${type}):`, imageUrl);
+    setImageErrors(prev => ({ ...prev, [imageUrl]: true }));
   };
 
   // Handle keyboard navigation
@@ -83,10 +104,20 @@ export default function ProjectGallery({
   }, []);
 
   if (!images || images.length === 0) {
+    console.log("⚠️ [ProjectGallery] No images to display");
     return null;
   }
 
+  const getImageUrl = (image) => {
+    return image?.src || image || '';
+  };
+
+  const getImageAlt = (image, index) => {
+    return image?.alt || image?.title || `Project image ${index + 1}`;
+  };
+
   const currentImage = selectedImageIndex !== null ? images[selectedImageIndex] : null;
+  const currentImageUrl = currentImage ? getImageUrl(currentImage) : '';
 
   return (
     <div className={`project-gallery-container ${className}`}>
@@ -105,56 +136,65 @@ export default function ProjectGallery({
           gridTemplateColumns: `repeat(${columns}, 1fr)`,
         }}
       >
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className="project-gallery-item"
-            onClick={() => openLightbox(index)}
-            style={{ aspectRatio }}
-          >
+        {images.map((image, index) => {
+          const imageUrl = getImageUrl(image);
+          return (
             <div
-              className="project-gallery-image"
-              style={{
-                backgroundImage: `url(${image.src || image})`,
-              }}
+              key={index}
+              className="project-gallery-item"
+              onClick={() => openLightbox(index)}
+              style={{ aspectRatio }}
             >
-              <div className="project-gallery-overlay">
-                <div className="project-gallery-overlay-content">
-                  <svg 
-                    className="project-gallery-expand-icon" 
-                    width="24" 
-                    height="24" 
-                    viewBox="0 0 24 24" 
-                    fill="none"
-                  >
-                    <path 
-                      d="M15 3H21V9M14 10L20.2 3.8M21 14V21H15M10 14L16.2 20.2M9 21H3V15M10 10L3.8 3.8M3 10V3H9M14 14L7.8 20.2" 
-                      stroke="currentColor" 
-                      strokeWidth="2" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+              <div className="project-gallery-image-wrapper">
+                <img
+                  src={imageUrl}
+                  alt={getImageAlt(image, index)}
+                  className="project-gallery-image"
+                  onError={(e) => {
+                    console.log(`❌ Gallery image ${index} error:`, e.target.src);
+                    e.target.src = 'https://via.placeholder.com/400x400?text=Image+Error';
+                    handleImageError(imageUrl, 'gallery');
+                  }}
+                  onLoad={() => console.log(`✅ Gallery image ${index} loaded:`, imageUrl)}
+                />
+                <div className="project-gallery-overlay">
+                  <div className="project-gallery-overlay-content">
+                    <svg 
+                      className="project-gallery-expand-icon" 
+                      width="24" 
+                      height="24" 
+                      viewBox="0 0 24 24" 
+                      fill="none"
+                    >
+                      <path 
+                        d="M15 3H21V9M14 10L20.2 3.8M21 14V21H15M10 14L16.2 20.2M9 21H3V15M10 10L3.8 3.8M3 10V3H9M14 14L7.8 20.2" 
+                        stroke="currentColor" 
+                        strokeWidth="2" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
                 </div>
+                
+                {showImageInfo && (image.title || image.caption) && (
+                  <div className="project-gallery-image-info">
+                    {image.title && (
+                      <span className="project-gallery-image-title">
+                        {image.title}
+                      </span>
+                    )}
+                    {image.caption && (
+                      <span className="project-gallery-image-caption">
+                        {image.caption}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
-              
-              {showImageInfo && (image.title || image.caption) && (
-                <div className="project-gallery-image-info">
-                  {image.title && (
-                    <span className="project-gallery-image-title">
-                      {image.title}
-                    </span>
-                  )}
-                  {image.caption && (
-                    <span className="project-gallery-image-caption">
-                      {image.caption}
-                    </span>
-                  )}
-                </div>
-              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Lightbox Modal */}
@@ -218,9 +258,14 @@ export default function ProjectGallery({
             {/* Main Image */}
             <div className="project-gallery-lightbox-image-container">
               <img
-                src={currentImage.src || currentImage}
-                alt={currentImage.alt || currentImage.title || `Project image ${selectedImageIndex + 1}`}
+                src={currentImageUrl}
+                alt={getImageAlt(currentImage, selectedImageIndex)}
                 className="project-gallery-lightbox-image"
+                onError={(e) => {
+                  console.log("❌ Lightbox image error:", e.target.src);
+                  e.target.src = 'https://via.placeholder.com/800x800?text=Image+Error';
+                }}
+                onLoad={() => console.log("✅ Lightbox image loaded:", currentImageUrl)}
               />
             </div>
 
@@ -256,21 +301,27 @@ export default function ProjectGallery({
             {showThumbnails && images.length > 1 && (
               <div className="project-gallery-lightbox-thumbnails">
                 <div className="project-gallery-lightbox-thumbnails-scroll">
-                  {images.map((image, index) => (
-                    <button
-                      key={index}
-                      className={`project-gallery-lightbox-thumbnail ${
-                        index === selectedImageIndex ? "project-gallery-lightbox-thumbnail--active" : ""
-                      }`}
-                      onClick={() => goToImage(index)}
-                      aria-label={`View image ${index + 1}`}
-                    >
-                      <img
-                        src={image.src || image}
-                        alt={image.alt || `Thumbnail ${index + 1}`}
-                      />
-                    </button>
-                  ))}
+                  {images.map((image, index) => {
+                    const thumbUrl = getImageUrl(image);
+                    return (
+                      <button
+                        key={index}
+                        className={`project-gallery-lightbox-thumbnail ${
+                          index === selectedImageIndex ? "project-gallery-lightbox-thumbnail--active" : ""
+                        }`}
+                        onClick={() => goToImage(index)}
+                        aria-label={`View image ${index + 1}`}
+                      >
+                        <img
+                          src={thumbUrl}
+                          alt={`Thumbnail ${index + 1}`}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -284,7 +335,6 @@ export default function ProjectGallery({
 ProjectGallery.propTypes = {
   /** Gallery title */
   title: PropTypes.string,
-
   /** Array of image objects or URLs */
   images: PropTypes.arrayOf(
     PropTypes.oneOfType([
@@ -298,19 +348,14 @@ ProjectGallery.propTypes = {
       }),
     ])
   ).isRequired,
-
   /** Show thumbnail navigation in lightbox */
   showThumbnails: PropTypes.bool,
-
   /** Additional CSS classes */
   className: PropTypes.string,
-
   /** Number of columns in the grid */
   columns: PropTypes.number,
-
   /** Aspect ratio for grid items */
   aspectRatio: PropTypes.string,
-
   /** Show image information */
   showImageInfo: PropTypes.bool,
 };

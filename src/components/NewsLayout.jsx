@@ -14,6 +14,7 @@ import "../styles/NewsLayout.css";
  * - Accessibility compliant
  * - Date formatting and author display
  * - Category tags and read time estimation
+ * - HTML content support with line breaks preserved
  *
  * @component
  * @example
@@ -58,9 +59,21 @@ export default function NewsLayout({
   // Calculate estimated read time
   const calculateReadTime = (content) => {
     if (!content) return 0;
+    // Strip HTML tags for word count
+    const text = content.replace(/<[^>]*>/g, ' ');
     const wordsPerMinute = 200;
-    const wordCount = content.split(" ").length;
+    const wordCount = text.split(/\s+/).filter(word => word.length > 0).length;
     return Math.ceil(wordCount / wordsPerMinute);
+  };
+
+  // Format content with line breaks preserved
+  const formatContent = (content) => {
+    if (!content) return '';
+    
+    // Convert newlines to <br> tags
+    let formattedContent = content.replace(/\n/g, '<br />');
+    
+    return formattedContent;
   };
 
   // Loading state
@@ -190,18 +203,22 @@ export default function NewsLayout({
                   </div>
                 )}
 
-                {/* Full Content */}
+                {/* Full Content - with line breaks preserved */}
                 {currentNews.content && (
                   <div className="news-card__full-content">
                     {typeof currentNews.content === "string" ? (
                       <div
                         className="news-card__content-text"
+                        style={{ whiteSpace: 'pre-wrap' }}
                         dangerouslySetInnerHTML={{
-                          __html: currentNews.content,
+                          __html: formatContent(currentNews.content),
                         }}
                       />
                     ) : (
-                      <div className="news-card__content-text">
+                      <div 
+                        className="news-card__content-text"
+                        style={{ whiteSpace: 'pre-wrap' }}
+                      >
                         {currentNews.content}
                       </div>
                     )}
