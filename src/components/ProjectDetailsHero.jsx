@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import "@/styles/ProjectDetailsHero.css";
 
@@ -18,21 +18,76 @@ export default function ProjectDetailsHero({
   showThumbnails = true,
   showNavigation = true,
   mapStyle = "embed", // "embed" or "image"
+  onImageError = null,
+  maxImages = 4, // ✅ Default value 4
 }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [imageErrors, setImageErrors] = useState({});
+
+  // ✅ Limit images to maxImages (default 4)
+  const limitedImages = images.slice(0, maxImages);
+  const totalImages = images.length;
+
+  // Debug received props
+  useEffect(() => {
+    console.log("🎯 [ProjectDetailsHero] Received props:");
+    console.log("   - title:", title);
+    console.log("   - total images:", totalImages);
+    console.log("   - showing images:", limitedImages.length);
+    console.log("   - maxImages:", maxImages);
+    if (limitedImages && limitedImages.length > 0) {
+      console.log("   - first image:", limitedImages[0]);
+    }
+  }, [images, limitedImages, title, maxImages, totalImages]);
 
   // Handle image navigation
   const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+    setCurrentImageIndex((prev) => (prev === limitedImages.length - 1 ? 0 : prev + 1));
   };
 
   const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+    setCurrentImageIndex((prev) => (prev === 0 ? limitedImages.length - 1 : prev - 1));
   };
 
   const goToImage = (index) => {
     setCurrentImageIndex(index);
   };
+
+  const handleImageError = (imageUrl, type = 'main') => {
+    console.log(`❌ [ProjectDetailsHero] Image failed to load (${type}):`, imageUrl);
+    setImageErrors(prev => ({ ...prev, [imageUrl]: true }));
+    
+    // Call parent error handler if provided
+    if (onImageError) {
+      onImageError(imageUrl, type);
+    }
+  };
+
+  const getImageUrl = (image) => {
+    return image?.src || image || '';
+  };
+
+  if (!limitedImages || limitedImages.length === 0) {
+    console.log("⚠️ [ProjectDetailsHero] No images provided");
+    return (
+      <section className={`project-details-hero${className ? ` ${className}` : ""}`}>
+        <div className="project-details-container">
+          <div className="project-details-gallery">
+            <div className="project-main-image-container">
+              <div className="project-main-image project-main-image--empty">
+                <p>No images available</p>
+              </div>
+            </div>
+          </div>
+          <div className="project-details-sidebar">
+            {/* Map and contact sections remain */}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const currentImageUrl = getImageUrl(limitedImages[currentImageIndex]);
 
   return (
     <section
@@ -49,17 +104,22 @@ export default function ProjectDetailsHero({
         <div className="project-details-gallery">
           {/* Main Image Display */}
           <div className="project-main-image-container">
-            {images.length > 0 && (
-              <div
-                className="project-main-image"
-                style={{
-                  backgroundImage: `url(${
-                    images[currentImageIndex]?.src || images[currentImageIndex]
-                  })`,
-                  aspectRatio: imageAspectRatio,
-                }}
-              >
-                {showNavigation && images.length > 1 && (
+            {limitedImages.length > 0 && (
+              <div className="project-main-image-wrapper">
+                <img
+                  src={currentImageUrl}
+                  alt={limitedImages[currentImageIndex]?.alt || `Project image ${currentImageIndex + 1}`}
+                  className="project-main-image"
+                  style={{ aspectRatio: imageAspectRatio }}
+                  onError={(e) => {
+                    console.log("❌ Main image error:", e.target.src);
+                    e.target.src = 'https://via.placeholder.com/800x450?text=Image+Not+Available';
+                    handleImageError(currentImageUrl, 'main');
+                  }}
+                  onLoad={() => console.log("✅ Main image loaded:", currentImageUrl)}
+                />
+                
+                {showNavigation && limitedImages.length > 1 && (
                   <>
                     {/* Navigation Arrows */}
                     <button
@@ -109,24 +169,40 @@ export default function ProjectDetailsHero({
             )}
           </div>
 
-          {/* Thumbnail Navigation */}
-          {showThumbnails && images.length > 1 && (
+          {/* Thumbnail Navigation - Show only limited images */}
+          {showThumbnails && limitedImages.length > 1 && (
             <div className="project-thumbnails">
-              {images.map((image, index) => (
-                <button
-                  key={index}
-                  className={`project-thumbnail${
-                    index === currentImageIndex
-                      ? " project-thumbnail--active"
-                      : ""
-                  }`}
-                  onClick={() => goToImage(index)}
-                  style={{
-                    backgroundImage: `url(${image.src || image})`,
-                  }}
-                  aria-label={`View image ${index + 1}`}
-                />
-              ))}
+              {limitedImages.map((image, index) => {
+                const thumbUrl = getImageUrl(image);
+                return (
+                  <button
+                    key={index}
+                    className={`project-thumbnail ${
+                      index === currentImageIndex
+                        ? "project-thumbnail--active"
+                        : ""
+                    }`}
+                    onClick={() => goToImage(index)}
+                    aria-label={`View image ${index + 1}`}
+                  >
+                    <img
+                      src={thumbUrl}
+                      alt={`Thumbnail ${index + 1}`}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.parentElement.style.background = '#f0f0f0';
+                      }}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* ✅ Image counter showing how many more images */}
+          {totalImages > maxImages && (
+            <div className="project-image-counter">
+              <span>+{totalImages - maxImages} more images in gallery</span>
             </div>
           )}
         </div>
@@ -145,9 +221,13 @@ export default function ProjectDetailsHero({
                 title="Project Location Map"
               />
             ) : mapImageUrl ? (
-              <div
+              <img
+                src={mapImageUrl}
+                alt="Project location map"
                 className="project-map-image"
-                style={{ backgroundImage: `url(${mapImageUrl})` }}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
               />
             ) : (
               <div className="project-map-placeholder">
@@ -171,7 +251,7 @@ export default function ProjectDetailsHero({
           </div>
 
           {/* Property Advisor Section WITH contact buttons inside */}
-          {propertyAdvisor.name && (
+          {propertyAdvisor?.name && (
             <div className="project-advisor-section">
               <div className="project-advisor-info">
                 {propertyAdvisor.avatar && (
@@ -181,7 +261,9 @@ export default function ProjectDetailsHero({
                       alt={propertyAdvisor.name}
                       onError={(e) => {
                         e.target.style.display = "none";
-                        e.target.nextSibling.style.display = "flex";
+                        if (e.target.nextSibling) {
+                          e.target.nextSibling.style.display = "flex";
+                        }
                       }}
                     />
                     <div className="project-advisor-avatar-fallback">
@@ -243,8 +325,6 @@ export default function ProjectDetailsHero({
               )}
             </div>
           )}
-
-          {/* Removed separate contact buttons block */}
         </div>
       </div>
     </section>
@@ -254,7 +334,6 @@ export default function ProjectDetailsHero({
 ProjectDetailsHero.propTypes = {
   /** Optional title displayed above the hero */
   title: PropTypes.string,
-
   /** Array of image objects or URLs */
   images: PropTypes.arrayOf(
     PropTypes.oneOfType([
@@ -266,13 +345,10 @@ ProjectDetailsHero.propTypes = {
       }),
     ])
   ),
-
   /** Google Maps embed URL */
   mapEmbedUrl: PropTypes.string,
-
   /** Static map image URL (alternative to embed) */
   mapImageUrl: PropTypes.string,
-
   /** Property advisor information */
   propertyAdvisor: PropTypes.shape({
     name: PropTypes.string,
@@ -281,7 +357,6 @@ ProjectDetailsHero.propTypes = {
     phone: PropTypes.string,
     email: PropTypes.string,
   }),
-
   /** Array of contact buttons */
   contactButtons: PropTypes.arrayOf(
     PropTypes.shape({
@@ -293,19 +368,18 @@ ProjectDetailsHero.propTypes = {
       external: PropTypes.bool,
     })
   ),
-
   /** Additional CSS classes */
   className: PropTypes.string,
-
   /** Image aspect ratio */
   imageAspectRatio: PropTypes.string,
-
   /** Show thumbnail navigation */
   showThumbnails: PropTypes.bool,
-
   /** Show navigation arrows */
   showNavigation: PropTypes.bool,
-
   /** Map display style - "embed" or "image" */
   mapStyle: PropTypes.oneOf(["embed", "image"]),
+  /** Image error callback */
+  onImageError: PropTypes.func,
+  /** Maximum number of images to display (default: 4) */
+  maxImages: PropTypes.number,
 };

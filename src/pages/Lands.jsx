@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { db } from "../firebaseConfig"; // Firebase config එක import කරගන්න
-import { collection, getDocs } from "firebase/firestore"; // Firestore functions
+import { db } from "../firebaseConfig";
+import { collection, getDocs } from "firebase/firestore";
 
 import MainNavbar from "@/components/MainNavbar";
 import LandHeroSection from "@/components/SubPageHeroSection";
@@ -12,8 +12,6 @@ import OurProjectsSection from "@/components/OurProjectsSection";
 import ProjectsWithSearchSection from "@/components/ProjectsWithSearchSection";
 import ContactForm from "@/components/ContactForm";
 import Footer from "@/components/Footer";
-
-
 
 const createSlug = (name) => {
   return name
@@ -32,75 +30,134 @@ export default function Lands() {
   const [selectedProject, setSelectedProject] = useState(null);
   
   // 🔥 Firebase data සඳහා state
-  const [allProjects, setAllProjects] = useState([]); // සියලුම projects
+  const [allProjects, setAllProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
-  const [projectDetailsMap, setProjectDetailsMap] = useState({}); // ID එකෙන් details ගන්න
-  const [loading, setLoading] = useState(true); // Loading state
+  const [projectDetailsMap, setProjectDetailsMap] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [imageErrors, setImageErrors] = useState({});
+
+  // Helper function to normalize images
+  const normalizeImages = (images, projectName = '') => {
+    if (!images) return [];
+    
+    return images.map(img => {
+      if (typeof img === 'string') {
+        return { src: img, alt: projectName || 'Land project image' };
+      }
+      if (img?.src) {
+        return { 
+          ...img, 
+          src: img.src,
+          alt: img.alt || projectName || 'Land project image'
+        };
+      }
+      return img;
+    });
+  };
+
+  // Test image loading
+  const testImageLoad = (imageUrl, type = 'image', index = 0) => {
+    if (!imageUrl) {
+      console.log(`❌ ${type} ${index}: No image URL provided`);
+      return;
+    }
+    
+    console.log(`🖼️ Testing ${type} ${index}:`, imageUrl);
+    const img = new Image();
+    img.onload = () => console.log(`✅ ${type} ${index} loaded successfully`);
+    img.onerror = () => {
+      console.log(`❌ ${type} ${index} failed to load:`, imageUrl);
+      setImageErrors(prev => ({ ...prev, [imageUrl]: true }));
+    };
+    img.src = imageUrl;
+  };
 
   // 🔥 Firebase එකෙන් data ගන්න
   useEffect(() => {
     const fetchLandsFromFirebase = async () => {
       try {
         setLoading(true);
+        console.log("🔍 Fetching lands from Firebase...");
         
-        // Firestore collection එකට connect වෙන්න
-        const landsCollection = collection(db, "landProjects"); // ඔයාගේ collection name එක
+        const landsCollection = collection(db, "landProjects");
         const querySnapshot = await getDocs(landsCollection);
+        
+        console.log(`📊 Found ${querySnapshot.docs.length} land documents`);
         
         const projects = [];
         const detailsMap = {};
         
         querySnapshot.forEach((doc) => {
-          // Document ID එක project id විදියට ගන්න
-          const projectData = {
-            id: doc.id,
-            ...doc.data()
-          };
+          const data = doc.data();
+          console.log(`📄 Land document:`, doc.id, data.name || data.title);
           
-          // OurProjectsSection එකට ඕනෙ format එකට හදන්න
+          // Debug images
+          if (data.image) {
+            console.log(`   Main image:`, data.image);
+            testImageLoad(data.image, 'main-image', doc.id);
+          }
+          
+          if (data.images && data.images.length > 0) {
+            console.log(`   Gallery images:`, data.images.length);
+            data.images.forEach((img, idx) => {
+              const imgUrl = img?.src || img;
+              testImageLoad(imgUrl, 'gallery-image', idx);
+            });
+          } else {
+            console.log(`   No gallery images`);
+          }
+          
+          // OurProjectsSection එකට ඕනෙ format එක
           const formattedProject = {
             id: doc.id,
-            name: projectData.name || projectData.title,
-            title: projectData.title || projectData.name,
-            description: projectData.description,
-            image: projectData.image, // Main cover image
-            category: "Lands", // සියල්ලම Lands category එකට
-            location: projectData.location,
-            price: projectData.price,
-            availability: projectData.availability,
-            area: "Various", // Land වලට area එකක් නැත්නම් default value එකක්
+            name: data.name || data.title || "Untitled",
+            title: data.title || data.name || "Untitled",
+            description: data.description || "",
+            image: data.image || HeroImg, // Fallback image
+            category: "Lands",
+            location: data.location || "",
+            price: data.price || "",
+            availability: data.availability || "Available",
+            area: data.area || "Various",
           };
           
           projects.push(formattedProject);
           
-          // Project details map එක හදන්න (ProjectDetailsHero එකට ඕනෙ)
+          // Project details map එක
           detailsMap[doc.id] = {
-            ...projectData,
-            // Gallery images array එක හරියට format කරන්න
-            images: projectData.images || [],
-            // Amenities array එක
-            amenities: projectData.amenities || [],
-            // FAQs array එක
-            faqs: projectData.faqs || [],
-            // Property advisor details
-            propertyAdvisor: projectData.propertyAdvisor || {
+            id: doc.id,
+            name: data.name || data.title || "Untitled",
+            title: data.title || data.name || "Untitled",
+            description: data.description || "",
+            location: data.location || "",
+            price: data.price || "",
+            area: data.area || "",
+            availability: data.availability || "Available",
+            // Normalize images
+            image: data.image || HeroImg,
+            images: normalizeImages(data.images || [], data.name || data.title),
+            mapEmbedUrl: data.mapEmbedUrl || "",
+            propertyAdvisor: data.propertyAdvisor || {
               name: "Odiliya Agent",
               title: "Land Advisor",
               phone: "94717508899",
               email: "info@odiliya.com",
               avatar: logo
             },
-            // Slug එක හදන්න
-            slug: createSlug(projectData.name || projectData.title)
+            amenities: data.amenities || [],
+            faqs: data.faqs || [],
+            brochureUrl: data.brochureUrl || "",
+            slug: data.slug || createSlug(data.name || data.title || "")
           };
         });
         
+        console.log(`✅ Total projects loaded:`, projects.length);
         setAllProjects(projects);
-        setFilteredProjects(projects); // මුලින් සියලුම projects පෙන්වන්න
+        setFilteredProjects(projects);
         setProjectDetailsMap(detailsMap);
         
       } catch (error) {
-        console.error("Error fetching lands from Firebase:", error);
+        console.error("❌ Error fetching lands:", error);
         alert("Error loading lands data: " + error.message);
       } finally {
         setLoading(false);
@@ -145,25 +202,23 @@ export default function Lands() {
     const projectId = searchParams.get("project");
     const shouldShowDetails = searchParams.get("showDetails") === "true";
 
-    if (projectId && shouldShowDetails) {
-      // Firebase එකෙන් ගත්ත details map එකෙන් project එක හොයන්න
+    if (projectId && shouldShowDetails && projectDetailsMap[projectId]) {
       const projectDetails = projectDetailsMap[projectId];
-      if (projectDetails) {
-        const slug = projectDetails.slug || createSlug(projectDetails.name);
-        navigate(`/project-details/${slug}`, {
-          state: {
-            projectId: projectId,
-            project: { id: projectId },
-            projectDetails: projectDetails,
-            source: "lands",
-            dataSource: "lands-firebase", // Firebase source එක කියලා mark කරන්න
-          },
-        });
-      }
+      const slug = projectDetails.slug || createSlug(projectDetails.name);
+      
+      navigate(`/project-details/${slug}`, {
+        state: {
+          projectId: projectId,
+          project: { id: projectId },
+          projectDetails: projectDetails,
+          source: "lands",
+          dataSource: "lands-firebase",
+        },
+      });
     }
   }, [searchParams, navigate, projectDetailsMap]);
 
-  // Handle project click - now uses slug
+  // Handle project click
   const handleProjectClick = (project) => {
     console.log("Land project clicked:", project);
 
@@ -172,16 +227,12 @@ export default function Lands() {
       return;
     }
 
-    // Firebase details map එකෙන් project details ගන්න
     const projectDetails = projectDetailsMap[project.id];
-
-    // Get slug from project data or create one
     const slug =
       projectDetails?.slug ||
       project.slug ||
       createSlug(project.title || project.name);
 
-    // Navigate to ProjectDetails page with slug
     navigate(`/project-details/${slug}`, {
       state: {
         projectId: project.id,
@@ -193,25 +244,21 @@ export default function Lands() {
     });
   };
 
-  // Handle back to projects list
   const handleBackToProjects = () => {
     setShowProjectDetails(false);
     setSelectedProject(null);
     setSearchParams({});
   };
 
-  // Handle project more info from featured projects
   const handleProjectMoreInfo = (project) => {
     handleProjectClick(project);
   };
 
-  // Handle search filtering
   const handleSearch = (searchData) => {
     console.log("Search data:", searchData);
 
-    let filtered = [...allProjects]; // Firebase එකෙන් ගත්ත allProjects state එක පාවිච්චි කරන්න
+    let filtered = [...allProjects];
 
-    // Filter by status (availability)
     if (searchData.status) {
       filtered = filtered.filter(
         (project) =>
@@ -221,7 +268,6 @@ export default function Lands() {
       );
     }
 
-    // Filter by location
     if (searchData.location) {
       filtered = filtered.filter(
         (project) =>
@@ -232,7 +278,6 @@ export default function Lands() {
       );
     }
 
-    // Filter by project name
     if (searchData.projectName) {
       filtered = filtered.filter(
         (project) =>
@@ -243,11 +288,10 @@ export default function Lands() {
       );
     }
 
-    console.log("Filtered projects:", filtered);
+    console.log("Filtered projects:", filtered.length);
     setFilteredProjects(filtered);
   };
 
-  // Extract unique locations from allProjects for search options
   const getUniqueLocations = () => {
     const locations = allProjects.map((project) => project.location).filter(
       Boolean,
@@ -255,7 +299,6 @@ export default function Lands() {
     return [...new Set(locations)].sort();
   };
 
-  // Contact buttons for project details
   const getContactButtons = (advisor) => [
     {
       label: "WhatsApp",
@@ -294,7 +337,12 @@ export default function Lands() {
     },
   ];
 
-  // Loading state පෙන්වන්න
+  const handleImageError = (imageUrl, type = 'image') => {
+    console.log(`❌ Image failed to load (${type}):`, imageUrl);
+    return 'https://via.placeholder.com/800x600?text=Image+Not+Available';
+  };
+
+  // Loading state
   if (loading) {
     return (
       <>
@@ -338,7 +386,7 @@ export default function Lands() {
             <OurProjectsSection
               title="OUR LAND PROJECTS"
               categories={["Lands"]}
-              projects={allProjects} // 🔥 Firebase projects array එක pass කරන්න
+              projects={allProjects}
               defaultCategory={0}
               className="lands-projects"
               onProjectClick={handleProjectClick}
@@ -360,55 +408,55 @@ export default function Lands() {
                   phone: "94717508899",
                 },
               }}
-              projects={filteredProjects} // 🔥 Filtered projects pass කරන්න
+              projects={filteredProjects}
               className="lands-projects-search"
               onProjectMoreInfo={handleProjectMoreInfo}
               onSearch={handleSearch}
             />
           </>
         ) : (
-          // Project details view එක එලෙසම තියාගන්න
-          <>
-            <div
-              style={{
-                marginTop: "-200px",
-                padding: "1.375rem 1rem",
-                background: "#ffffff",
-              }}
-            >
-              <div style={{ maxWidth: "1400px", margin: "0 auto 0 auto" }}>
-                <button
-                  onClick={handleBackToProjects}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                    padding: "0.75rem 1.5rem",
-                    background: "#ff9900",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "8px",
-                    fontSize: "1rem",
-                    fontWeight: "600",
-                    cursor: "pointer",
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
+          selectedProject && (
+            <>
+              <div
+                style={{
+                  marginTop: "-200px",
+                  padding: "1.375rem 1rem",
+                  background: "#ffffff",
+                }}
+              >
+                <div style={{ maxWidth: "1400px", margin: "0 auto 0 auto" }}>
+                  <button
+                    onClick={handleBackToProjects}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      padding: "0.75rem 1.5rem",
+                      background: "#ff9900",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "8px",
+                      fontSize: "1rem",
+                      fontWeight: "600",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease",
+                    }}
                   >
-                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
-                  </svg>
-                  Back to Land Projects
-                </button>
-              </div>
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                    </svg>
+                    Back to Land Projects
+                  </button>
+                </div>
 
-              {selectedProject && (
                 <ProjectDetailsHero
-                  images={selectedProject.images}
+                  title={selectedProject.name}
+                  images={selectedProject.images || []}
                   mapEmbedUrl={selectedProject.mapEmbedUrl}
                   propertyAdvisor={selectedProject.propertyAdvisor}
                   contactButtons={getContactButtons(
@@ -418,10 +466,9 @@ export default function Lands() {
                   showNavigation={true}
                   imageAspectRatio="16/9"
                   className="lands-project-details"
+                  onImageError={handleImageError}
                 />
-              )}
 
-              {selectedProject && (
                 <section style={{ padding: "2rem 0", background: "#ffffff" }}>
                   <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
                     <div
@@ -476,7 +523,6 @@ export default function Lands() {
                               gap: "0.75rem",
                             }}
                           >
-                            {/* Amenities list එක Firebase එකෙන් ගත්ත amenities array එකෙන් පෙන්වන්න පුළුවන් */}
                             {selectedProject.amenities && selectedProject.amenities.length > 0 ? (
                               selectedProject.amenities.map((item, index) => (
                                 <li key={index} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -485,7 +531,6 @@ export default function Lands() {
                                 </li>
                               ))
                             ) : (
-                              // Default amenities list එක
                               <>
                                 <li style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                                   <span style={{ color: "#ff9900", fontSize: "1.2rem" }}>✓</span>
@@ -561,7 +606,7 @@ export default function Lands() {
                               Available Sizes:
                             </strong>
                             <p style={{ margin: "0.25rem 0", color: "#666" }}>
-                              Multiple Plot Sizes
+                              {selectedProject.area || "Multiple Plot Sizes"}
                             </p>
                           </div>
                           <div>
@@ -569,7 +614,7 @@ export default function Lands() {
                               Development Status:
                             </strong>
                             <p style={{ margin: "0.25rem 0", color: "#666" }}>
-                              Ready for Construction
+                              {selectedProject.availability || "Ready for Construction"}
                             </p>
                           </div>
                           <div>
@@ -592,9 +637,9 @@ export default function Lands() {
                     </div>
                   </div>
                 </section>
-              )}
-            </div>
-          </>
+              </div>
+            </>
+          )
         )}
       </main>
       <ContactForm />

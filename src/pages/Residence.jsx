@@ -68,8 +68,8 @@ export default function Residence() {
         querySnapshot.forEach((doc) => {
           const data = doc.data();
           
-          // Check if project is ICON
-          const isIcon = data.name && data.name.toUpperCase().includes("ICON");
+          // Check if project is "ICON V - Talpe" (exact match)
+          const isIconVTalpe = data.name && data.name.trim() === "ICON V - Talpe";
           
           const formattedProject = {
             id: doc.id,
@@ -96,7 +96,7 @@ export default function Residence() {
             virtualTours: data.virtualTours || [],
             brochureUrl: data.brochureUrl || "",
             heroTitle: data.heroTitle || data.name || "",
-            isIcon: isIcon
+            isIconVTalpe: isIconVTalpe  // Changed from isIcon to isIconVTalpe
           };
           
           projectsList.push(formattedProject);
@@ -113,7 +113,7 @@ export default function Residence() {
         setProjectDetailsMap(detailsMap);
         
         console.log(`✅ Loaded ${projectsList.length} projects from Firebase`);
-        console.log("ICON Projects:", projectsList.filter(p => p.isIcon).length);
+        console.log("ICON V - Talpe Project:", projectsList.filter(p => p.isIconVTalpe).length);
         
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -135,26 +135,26 @@ export default function Residence() {
     console.log(`🎯 Active Category: ${categoryName}`);
     
     return allProjects.filter((project) => {
-      // Check if project name contains ICON
-      const isIcon = project.name && project.name.toUpperCase().includes("ICON");
+      // Check if project name is exactly "ICON V - Talpe"
+      const isIconVTalpe = project.name && project.name.trim() === "ICON V - Talpe";
       
       // APARTMENTS category
       if (categoryName === "Apartments") {
         // Show ALL projects that are:
         // 1. Category is "Apartments", OR
-        // 2. Name contains "ICON" (regardless of category)
-        return project.category === "Apartments" || isIcon;
+        // 2. Name is exactly "ICON V - Talpe" (regardless of category)
+        return project.category === "Apartments" || isIconVTalpe;
       }
       
       // RESIDENCIES category
       if (categoryName === "Residencies") {
-        // Show ONLY projects with category "Residencies" AND NOT ICON
-        return project.category === "Residencies" && !isIcon;
+        // Show ONLY projects with category "Residencies" AND NOT "ICON V - Talpe"
+        return project.category === "Residencies" && !isIconVTalpe;
       }
       
       // ROI PROJECTS category
       if (categoryName === "ROI Projects") {
-        // Show only ROI Projects (ICON projects not in ROI normally)
+        // Show only ROI Projects
         return project.category === "ROI Projects";
       }
       
@@ -171,14 +171,14 @@ export default function Residence() {
     
     // First filter by category and special rules
     const baseProjects = featuredProjects.filter((project) => {
-      const isIcon = project.name && project.name.toUpperCase().includes("ICON");
+      const isIconVTalpe = project.name && project.name.trim() === "ICON V - Talpe";
       
       if (categoryName === "Apartments") {
-        return project.category === "Apartments" || isIcon;
+        return project.category === "Apartments" || isIconVTalpe;
       }
       
       if (categoryName === "Residencies") {
-        return project.category === "Residencies" && !isIcon;
+        return project.category === "Residencies" && !isIconVTalpe;
       }
       
       if (categoryName === "ROI Projects") {
@@ -223,14 +223,14 @@ export default function Residence() {
     
     // Apply same filtering for search options
     const categoryProjects = featuredProjects.filter((project) => {
-      const isIcon = project.name && project.name.toUpperCase().includes("ICON");
+      const isIconVTalpe = project.name && project.name.trim() === "ICON V - Talpe";
       
       if (categoryName === "Apartments") {
-        return project.category === "Apartments" || isIcon;
+        return project.category === "Apartments" || isIconVTalpe;
       }
       
       if (categoryName === "Residencies") {
-        return project.category === "Residencies" && !isIcon;
+        return project.category === "Residencies" && !isIconVTalpe;
       }
       
       if (categoryName === "ROI Projects") {

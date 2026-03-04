@@ -38,7 +38,7 @@ export default function HeroSection({
       backgroundImage:
         "#",
       backgroundVideo:
-        "#",
+        "https://pub-9bd45192d22f4f0e895c52adcfb2460a.r2.dev/apartmentcompress_ri23bo.mp4",
       // backgroundImage: { apartmentImg },
       title: "EXCLUSIVE APARTMENTS",
       description:
@@ -52,7 +52,7 @@ export default function HeroSection({
       backgroundImage:
         "#",
       backgroundVideo:
-        "#",
+        "https://pub-9bd45192d22f4f0e895c52adcfb2460a.r2.dev/envato_video_gen_Nov_11_2025_4_50_21_duessc.mp4",
       // backgroundImage: { houseImg },
       title: "DREAM RESIDENCIES",
       description:
@@ -66,7 +66,7 @@ export default function HeroSection({
       backgroundImage:
         "#",
       backgroundVideo:
-        "#",
+        "https://pub-9bd45192d22f4f0e895c52adcfb2460a.r2.dev/envato_video_gen_Nov_17_2025_11_37_19.mp4",
       title: "PREMIUM LAND PLOTS",
       description:
         "Invest in premium land parcels with excellent growth potential and strategic locations. Build your future on solid foundations.",
@@ -79,7 +79,7 @@ export default function HeroSection({
       backgroundImage:
         "#",
       backgroundVideo:
-        "#",
+        "https://pub-9bd45192d22f4f0e895c52adcfb2460a.r2.dev/envato_video_gen_Jan_08_2026_6_04_57_1_zgk0zs.mp4",
       title: "LUXURY ROI PROJECTS",
       description:
         "Discover premium residential developments with world-class amenities and stunning architectural design. Experience modern living at its finest.",

@@ -49,7 +49,7 @@
 .project-card__overlay {
   position: relative;
   z-index: 1;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  
   color: #fff;
   padding: 1.5rem;
   width: 100%;
@@ -72,7 +72,8 @@
 /* Details Section */
 .project-card__details {
   padding: 1.25rem;
-  background: #f8f8f8;
+  box-shadow: none !important;
+  
 }
 
 .project-card__header {
@@ -80,12 +81,17 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  background: none !important;
+  box-shadow: none !important;
 }
 
 .project-card__location {
   font-size: 16px;
   font-weight: 600;
+  background: transparent !important; /* Background එක අයින් කරයි */
+  box-shadow: none !important;
   margin: 0;
+  text-align: left;
   color: #000000;
 }
 

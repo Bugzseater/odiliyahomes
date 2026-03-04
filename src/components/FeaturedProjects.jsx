@@ -73,26 +73,30 @@ const FeaturedProjects = ({
         });
         
         // Fetch lands
-        const landsSnapshot = await getDocs(collection(db, "landProjects"));
-        const lands = landsSnapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            name: data.name || "",
-            slug: data.slug || createSlug(data.name || ""),
-            category: "Lands",
-            description: data.description || "",
-            image: data.images?.[0]?.src || data.image || "",
-            location: data.location || "",
-            price: data.price || "",
-            area: data.area || "",
-            availability: data.availability || "Available",
-            source: "lands",
-            createdAt: data.createdAt?.toDate?.() || new Date(),
-            featured: data.featured || false,
-            propertyAdvisor: data.propertyAdvisor || {}
-          };
-        });
+// Fetch lands (Lands දත්ත ලබා ගන්නා කොටස සොයාගෙන මෙය ආදේශ කරන්න)
+const landsSnapshot = await getDocs(collection(db, "landProjects"));
+const lands = landsSnapshot.docs.map(doc => {
+  const data = doc.data();
+  return {
+    id: doc.id,
+    name: data.name || "",
+    slug: data.slug || createSlug(data.name || ""),
+    category: "Lands",
+    description: data.description || "",
+    image: data.image || (data.images?.[0]?.src || ""), // Main image
+    images: data.images || [], // Full gallery array
+    mapEmbedUrl: data.mapEmbedUrl || "", // Map URL එක මෙතනට අනිවාර්යයි
+    location: data.location || "",
+    price: data.price || "",
+    availability: data.availability || "Available",
+    amenities: data.amenities || [],
+    faqs: data.faqs || [],
+    source: "lands",
+    createdAt: data.createdAt?.toDate?.() || new Date(),
+    featured: data.featured || false,
+    propertyAdvisor: data.propertyAdvisor || {}
+  };
+});
         
         console.log("Projects loaded:", projects.length);
         console.log("Lands loaded:", lands.length);
@@ -290,30 +294,27 @@ const FeaturedProjects = ({
     }
   }, [canGoNext, handleUserInteraction, isSliding]);
 
-  const handleViewDetails = (project) => {
-    console.log("🔍 Navigating to project:", project);
-    
-    // Create slug if not exists
-    const slug = project.slug || createSlug(project.name);
-    
-    if (!slug) {
-      console.error("No slug available for project:", project);
-      return;
+const handleViewDetails = (project) => {
+  console.log("🔍 Navigating to project with full data:", project);
+  
+  const slug = project.slug || createSlug(project.name);
+  
+  if (!slug) {
+    console.error("No slug available for project:", project);
+    return;
+  }
+  
+  navigate(`/project-details/${slug}`, {
+    state: {
+      projectId: project.id,
+      source: project.source === "lands" ? "lands" : "residence",
+      dataSource: project.source,
+      category: project.category,
+      // මුළු project object එකම pass කිරීමෙන් සියලුම දත්ත (images, map url) ලබාගත හැක
+      projectDetails: project 
     }
-    
-    console.log("🔍 Using slug:", slug);
-    
-    // Navigate to project details
-    navigate(`/project-details/${slug}`, {
-      state: {
-        projectId: project.id,
-        source: project.source === "lands" ? "lands" : "residence",
-        dataSource: project.source,
-        category: project.category,
-        projectDetails: project // Pass full project data as fallback
-      }
-    });
-  };
+  });
+};
 
   // Loading state
   if (loading) {
@@ -503,19 +504,9 @@ const ProjectCard = React.memo(({ project, index, onViewDetails }) => {
         <h3 className="project-card__title">{project.name}</h3>
         
         <div className="project-card__bottom-content">
-          {project.location && (
-            <p className="project-card__location">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-                <circle cx="12" cy="9" r="2.5"/>
-              </svg>
-              {project.location}
-            </p>
-          )}
 
-          {project.price && (
-            <p className="project-card__price">{project.price}</p>
-          )}
+
+
 
           <button
             className="project-card__cta"

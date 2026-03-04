@@ -14,6 +14,7 @@ export default function OurProjectsSection({
   className = "",
   onProjectClick,
   onCategoryChange,
+  limit = 3, // Add this line - default limit 3
 }) {
   const [activeCategory, setActiveCategory] = useState(defaultCategory);
 
@@ -34,6 +35,9 @@ export default function OurProjectsSection({
   const filteredProjects = projects.filter(
     (project) => project.category === categories[activeCategory],
   );
+
+  // Apply limit to filtered projects
+  const displayedProjects = filteredProjects.slice(0, limit);
 
   return (
     <section
@@ -62,7 +66,7 @@ export default function OurProjectsSection({
 
         {/* Projects Grid */}
         <div className="our-projects-grid">
-          {filteredProjects.map((project, index) => (
+          {displayedProjects.map((project, index) => (
             <div
               key={project.id || index}
               className="our-projects-card"
@@ -80,6 +84,15 @@ export default function OurProjectsSection({
             </div>
           ))}
         </div>
+
+        {/* Show message if there are more projects */}
+        {filteredProjects.length > limit && (
+          <div className="text-center mt-4">
+            <p className="text-gray-500">
+              +{filteredProjects.length - limit} more projects
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );
@@ -101,4 +114,5 @@ OurProjectsSection.propTypes = {
   className: PropTypes.string,
   onProjectClick: PropTypes.func,
   onCategoryChange: PropTypes.func,
+  limit: PropTypes.number, // Add this line
 };

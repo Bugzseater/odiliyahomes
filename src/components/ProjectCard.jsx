@@ -45,10 +45,10 @@ export default function ProjectCard({
         </div>
 
         <div className="project-card__info">
-          <div className="project-card__area">
+          {/* <div className="project-card__area">
             <span className="project-card__label">{area}</span>
-          </div>
-          <div className="project-card__price">
+          </div> */}
+          <div className="project-cardS__price">
             <span className="project-card__label">Unit Starting Price</span>
             <span className="project-card__amount"> {price}</span>
           </div>

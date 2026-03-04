@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { db } from "../firebaseConfig"; 
+import { db } from "../firebaseConfig";
 import { collection, query, limit, onSnapshot } from "firebase/firestore";
 import "@/styles/LandsSection.css";
 
@@ -11,8 +11,7 @@ const LandsSection = () => {
   const titleRef = useRef(null);
 
   useEffect(() => {
-    // Collection name එක "landProjects" විය යුතුයි
-    const q = query(collection(db, "landProjects"), limit(4));
+    const q = query(collection(db, "landProjects"), limit(8));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const landsData = snapshot.docs.map(doc => ({
@@ -27,7 +26,7 @@ const LandsSection = () => {
   }, []);
 
   const handleProjectClick = (project) => {
-    const slug = project.name.toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-");
+    const slug = project.name?.toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-") || "project";
     navigate(`/project-details/${slug}`, {
       state: {
         projectId: project.id,
@@ -47,63 +46,74 @@ const LandsSection = () => {
       </h2>
 
       <div className="lands-section__container">
-        {/* 1000+ Lands Sold Out කොටස - දැන් Animation එකක් නැති නිසා අනිවාර්යයෙන් පේනවා */}
+        {/* Left Panel - 1000+ LANDS SOLD OUT */}
         <div className="lands-section__stats lands-section__stats--visible">
           <div className="lands-section__stats-content">
-            <div className="lands-section__main-stat"></div>
-            <div className="lands-section__brand" style={{ visibility: 'visible', opacity: 1 }}>
-              <span className="lands-section__brand-text">
-                1000+ Lands <br /> Sold Out
-              </span>
+            <div className="lands-section__main-stat">
+              <span className="lands-section__number">1000+</span>
+              <span className="lands-section__stat-label">LANDS</span>
+            </div>
+            <div className="lands-section__sold-out">
+              <span className="lands-section__sold-text">SOLD OUT</span>
             </div>
           </div>
         </div>
 
+        {/* Right Panel - Projects List */}
         <div className="lands-section__combined">
           <div className="lands-section__projects-list">
             <div className="lands-section__projects-scroll-inner">
               
-              {/* දත්ත පෙන්වන ප්‍රධාන Loop එක */}
+              {/* Main Project Rows */}
               {lands.map((item, index) => (
                 <div
                   key={item.id}
                   className="lands-section__project-row"
-                  style={{ cursor: "pointer" }}
+                  onClick={() => handleProjectClick(item)}
+                >
+                  {/* Image Card */}
+                  <div className="lands-section__project-card">
+                    <img 
+                      src={item.image} 
+                      alt={item.name} 
+                      className="lands-section__project-image"
+                      loading="lazy"
+                    />
+                  </div>
+
+                  {/* Info Card */}
+                  <div className="lands-section__info-card">
+                    <h3 className="lands-section__info-title">{item.name}</h3>
+                    <p className="lands-section__info-description">
+                      {item.description?.substring(0, 100)}...
+                    </p>
+                  </div>
+                </div>
+              ))}
+
+              {/* Duplicate for Infinite Scroll (only if more than 2 items) */}
+              {lands.length > 2 && lands.map((item) => (
+                <div
+                  key={`dup-${item.id}`}
+                  className="lands-section__project-row"
                   onClick={() => handleProjectClick(item)}
                 >
                   <div className="lands-section__project-card">
-                    <div className="lands-section__project-image">
-                      <img src={item.image} alt={item.name} loading="lazy" />
-                    </div>
-                    <div className="lands-section__project-overlay">
-                      <h3 className="lands-section__project-name">{item.name}</h3>
-                      <p className="lands-section__project-location">{item.location}</p>
-                      <span className="lands-section__project-size">{item.availability}</span>
+                    <img 
+                      src={item.image} 
+                      alt={item.name} 
+                      className="lands-section__project-image"
+                    />
+                    <div className="lands-section__project-label">
+                      {item.location || "New Project"}
                     </div>
                   </div>
 
                   <div className="lands-section__info-card">
                     <h3 className="lands-section__info-title">{item.name}</h3>
                     <p className="lands-section__info-description">
-                      {item.description?.substring(0, 120)}...
+                      {item.description?.substring(0, 100)}...
                     </p>
-                  </div>
-                </div>
-              ))}
-
-              {/* මෙහි තිබූ Duplicate loop එක අයින් කළා. 
-                  දත්ත 3කට වඩා තිබුණොත් විතරක් Infinite scroll එක දාන එක තමයි හොඳ. 
-              */}
-              {lands.length > 2 && lands.map((item) => (
-                <div key={`dup-${item.id}`} className="lands-section__project-row" onClick={() => handleProjectClick(item)}>
-                   <div className="lands-section__project-card">
-                    <div className="lands-section__project-image">
-                      <img src={item.image} alt={item.name} />
-                    </div>
-                    <div className="lands-section__project-overlay">
-                      <h3 className="lands-section__project-name">{item.name}</h3>
-                      <p className="lands-section__project-location">{item.location}</p>
-                    </div>
                   </div>
                 </div>
               ))}
