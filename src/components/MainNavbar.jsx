@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import logo from "../assets/Odiliyalogo.png";
+import logo from "../assets/odiliyalogo.png";
 import PhoneDropdown from "./PhoneDropdown";
 import "@/styles/MainNavbar.css";
 

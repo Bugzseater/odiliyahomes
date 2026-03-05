@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import "@/styles/AboutHeroSection.css";
-// import logoImg from "@/assets/Odiliyalogo.png";
+// import logoImg from "@/assets/odiliyalogo.png";
 
 /**
  * AboutHeroSection - Reusable hero section with overview content
