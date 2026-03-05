@@ -13,7 +13,7 @@ import Footer from "@/components/Footer";
 import vision from "@/assets/images/vision.jpg";
 import mission from "@/assets/images/mission.png";
 import goal from "@/assets/images/goal.webp";
-import history1 from "@/assets/images/img1_9.jpg";
+import history1 from "@/assets/images/img1_9.JPG";
 import history2 from "@/assets/images/history2.jpg";
 
 export default function About() {
