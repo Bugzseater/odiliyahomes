@@ -4,7 +4,7 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import "../styles/Footer.css";
 import "../styles/globals.css";
-import logo from "../assets/Odiliyalogo.png";
+import logo from "../assets/odiliyalogo.png";
 
 const Footer = () => {
   const [data, setData] = useState(null);
