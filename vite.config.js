@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { fileURLToPath } from "node:url";
-import { copyFileSync, existsSync } from "fs";
+import { copyFileSync, existsSync, writeFileSync } from "fs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -12,7 +12,6 @@ export default defineConfig({
     {
       name: "copy-htaccess",
       closeBundle() {
-        // Check if .htaccess exists before copying
         const sourcePath = path.resolve(__dirname, "public", ".htaccess");
         const destPath = path.resolve(__dirname, "dist", ".htaccess");
         
@@ -25,9 +24,8 @@ export default defineConfig({
           }
         } else {
           console.warn("⚠️ .htaccess file not found in public folder");
-          // Create an empty .htaccess file if needed
+          // Create default .htaccess file directly
           try {
-            // Optional: Create default .htaccess
             const defaultContent = `# Apache configuration
 <IfModule mod_rewrite.c>
   RewriteEngine On
@@ -37,8 +35,10 @@ export default defineConfig({
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule . /index.html [L]
 </IfModule>`;
-            copyFileSync(Buffer.from(defaultContent), destPath);
-            console.log("✓ Default .htaccess created");
+            
+            // Write file directly instead of using copyFileSync with Buffer
+            writeFileSync(destPath, defaultContent);
+            console.log("✓ Default .htaccess created in dist folder");
           } catch (createErr) {
             console.error("Could not create .htaccess:", createErr);
           }
