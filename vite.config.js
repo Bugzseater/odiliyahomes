@@ -2,49 +2,13 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { fileURLToPath } from "node:url";
-import { copyFileSync, existsSync, writeFileSync } from "fs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [
-    react(),
-    {
-      name: "copy-htaccess",
-      closeBundle() {
-        const sourcePath = path.resolve(__dirname, "public", ".htaccess");
-        const destPath = path.resolve(__dirname, "dist", ".htaccess");
-        
-        if (existsSync(sourcePath)) {
-          try {
-            copyFileSync(sourcePath, destPath);
-            console.log("✓ .htaccess copied to dist folder");
-          } catch (err) {
-            console.error("Failed to copy .htaccess:", err);
-          }
-        } else {
-          console.warn("⚠️ .htaccess file not found in public folder");
-          // Create default .htaccess file directly
-          try {
-            const defaultContent = `# Apache configuration
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  RewriteRule ^index\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /index.html [L]
-</IfModule>`;
-            
-            // Write file directly instead of using copyFileSync with Buffer
-            writeFileSync(destPath, defaultContent);
-            console.log("✓ Default .htaccess created in dist folder");
-          } catch (createErr) {
-            console.error("Could not create .htaccess:", createErr);
-          }
-        }
-      },
-    },
+    react()
+    // copy-htaccess plugin එක මෙතනින් අයින් කරන්න
   ],
   base: "/",
   resolve: {
@@ -60,25 +24,19 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          // Split node_modules into vendor chunks
           if (id.includes("node_modules")) {
-            // Split React libraries separately
             if (id.includes("react") || id.includes("react-dom") || id.includes("react-router")) {
               return "react-vendor";
             }
-            // Split Firebase libraries separately
             if (id.includes("firebase")) {
               return "firebase-vendor";
             }
-            // Split Lucide icons separately
             if (id.includes("lucide-react")) {
               return "icons-vendor";
             }
-            // Other node_modules go to vendor chunk
             return "vendor";
           }
         },
-        // Optimize file naming
         chunkFileNames: "assets/js/[name]-[hash].js",
         entryFileNames: "assets/js/[name]-[hash].js",
         assetFileNames: "assets/[ext]/[name]-[hash].[ext]",

@@ -11,7 +11,7 @@ import ProjectDetailsHero from "@/components/ProjectDetailsHero";
 import heroImg from "@/assets/images/panadura01.png";
 import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
-import avatar from "@/assets/Odiliyalogo.png";
+import avatar from "@/assets/odiliyalogo.png";
 
 const createSlug = (name) => {
   return name
