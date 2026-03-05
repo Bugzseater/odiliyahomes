@@ -7,7 +7,7 @@ import MainNavbar from "@/components/MainNavbar";
 import LandHeroSection from "@/components/SubPageHeroSection";
 import ProjectDetailsHero from "@/components/ProjectDetailsHero";
 import HeroImg from "@/assets/images/hikkaduw.jpg";
-import logo from "@/assets/Odiliyalogo.png";
+import logo from "@/assets/odiliyalogo.png";
 import OurProjectsSection from "@/components/OurProjectsSection";
 import ProjectsWithSearchSection from "@/components/ProjectsWithSearchSection";
 import ContactForm from "@/components/ContactForm";
