@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import PropTypes from "prop-types";
 import "@/styles/VirtualTour.css";
+import thumbnailimg from "@/assets/images/video_icon.jpg";
 
 /**
  * VirtualTour - Interactive virtual tour video component
@@ -221,7 +222,8 @@ export default function VirtualTour({
                   aria-label={`Go to tour ${idx + 1}`}
                 >
                   <img
-                    src={tour.thumbnail || tour.poster}
+                    // src={tour.thumbnail || tour.poster}
+                    src={thumbnailimg}
                     alt={tour.name || `Tour ${idx + 1}`}
                     className="virtual-tour-thumbnail-img"
                   />
@@ -270,9 +272,9 @@ VirtualTour.propTypes = {
         PropTypes.shape({
           icon: PropTypes.node,
           text: PropTypes.string.isRequired,
-        })
+        }),
       ),
-    })
+    }),
   ).isRequired,
   showNavigation: PropTypes.bool,
   autoPlay: PropTypes.bool,

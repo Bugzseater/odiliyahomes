@@ -28,7 +28,7 @@ export default function Lands() {
 
   const [showProjectDetails, setShowProjectDetails] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
-  
+
   // 🔥 Firebase data සඳහා state
   const [allProjects, setAllProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
@@ -37,18 +37,18 @@ export default function Lands() {
   const [imageErrors, setImageErrors] = useState({});
 
   // Helper function to normalize images
-  const normalizeImages = (images, projectName = '') => {
+  const normalizeImages = (images, projectName = "") => {
     if (!images) return [];
-    
-    return images.map(img => {
-      if (typeof img === 'string') {
-        return { src: img, alt: projectName || 'Land project image' };
+
+    return images.map((img) => {
+      if (typeof img === "string") {
+        return { src: img, alt: projectName || "Land project image" };
       }
       if (img?.src) {
-        return { 
-          ...img, 
+        return {
+          ...img,
           src: img.src,
-          alt: img.alt || projectName || 'Land project image'
+          alt: img.alt || projectName || "Land project image",
         };
       }
       return img;
@@ -56,18 +56,18 @@ export default function Lands() {
   };
 
   // Test image loading
-  const testImageLoad = (imageUrl, type = 'image', index = 0) => {
+  const testImageLoad = (imageUrl, type = "image", index = 0) => {
     if (!imageUrl) {
       console.log(`❌ ${type} ${index}: No image URL provided`);
       return;
     }
-    
+
     console.log(`🖼️ Testing ${type} ${index}:`, imageUrl);
     const img = new Image();
     img.onload = () => console.log(`✅ ${type} ${index} loaded successfully`);
     img.onerror = () => {
       console.log(`❌ ${type} ${index} failed to load:`, imageUrl);
-      setImageErrors(prev => ({ ...prev, [imageUrl]: true }));
+      setImageErrors((prev) => ({ ...prev, [imageUrl]: true }));
     };
     img.src = imageUrl;
   };
@@ -78,35 +78,35 @@ export default function Lands() {
       try {
         setLoading(true);
         console.log("🔍 Fetching lands from Firebase...");
-        
+
         const landsCollection = collection(db, "landProjects");
         const querySnapshot = await getDocs(landsCollection);
-        
+
         console.log(`📊 Found ${querySnapshot.docs.length} land documents`);
-        
+
         const projects = [];
         const detailsMap = {};
-        
+
         querySnapshot.forEach((doc) => {
           const data = doc.data();
           console.log(`📄 Land document:`, doc.id, data.name || data.title);
-          
+
           // Debug images
           if (data.image) {
             console.log(`   Main image:`, data.image);
-            testImageLoad(data.image, 'main-image', doc.id);
+            testImageLoad(data.image, "main-image", doc.id);
           }
-          
+
           if (data.images && data.images.length > 0) {
             console.log(`   Gallery images:`, data.images.length);
             data.images.forEach((img, idx) => {
               const imgUrl = img?.src || img;
-              testImageLoad(imgUrl, 'gallery-image', idx);
+              testImageLoad(imgUrl, "gallery-image", idx);
             });
           } else {
             console.log(`   No gallery images`);
           }
-          
+
           // OurProjectsSection එකට ඕනෙ format එක
           const formattedProject = {
             id: doc.id,
@@ -120,9 +120,9 @@ export default function Lands() {
             availability: data.availability || "Available",
             area: data.area || "Various",
           };
-          
+
           projects.push(formattedProject);
-          
+
           // Project details map එක
           detailsMap[doc.id] = {
             id: doc.id,
@@ -142,20 +142,19 @@ export default function Lands() {
               title: "Land Advisor",
               phone: "94717508899",
               email: "info@odiliya.com",
-              avatar: logo
+              avatar: logo,
             },
             amenities: data.amenities || [],
             faqs: data.faqs || [],
             brochureUrl: data.brochureUrl || "",
-            slug: data.slug || createSlug(data.name || data.title || "")
+            slug: data.slug || createSlug(data.name || data.title || ""),
           };
         });
-        
+
         console.log(`✅ Total projects loaded:`, projects.length);
         setAllProjects(projects);
         setFilteredProjects(projects);
         setProjectDetailsMap(detailsMap);
-        
       } catch (error) {
         console.error("❌ Error fetching lands:", error);
         alert("Error loading lands data: " + error.message);
@@ -163,7 +162,7 @@ export default function Lands() {
         setLoading(false);
       }
     };
-    
+
     fetchLandsFromFirebase();
   }, []);
 
@@ -205,7 +204,7 @@ export default function Lands() {
     if (projectId && shouldShowDetails && projectDetailsMap[projectId]) {
       const projectDetails = projectDetailsMap[projectId];
       const slug = projectDetails.slug || createSlug(projectDetails.name);
-      
+
       navigate(`/project-details/${slug}`, {
         state: {
           projectId: projectId,
@@ -293,9 +292,9 @@ export default function Lands() {
   };
 
   const getUniqueLocations = () => {
-    const locations = allProjects.map((project) => project.location).filter(
-      Boolean,
-    );
+    const locations = allProjects
+      .map((project) => project.location)
+      .filter(Boolean);
     return [...new Set(locations)].sort();
   };
 
@@ -337,9 +336,9 @@ export default function Lands() {
     },
   ];
 
-  const handleImageError = (imageUrl, type = 'image') => {
+  const handleImageError = (imageUrl, type = "image") => {
     console.log(`❌ Image failed to load (${type}):`, imageUrl);
-    return 'https://via.placeholder.com/800x600?text=Image+Not+Available';
+    return "https://via.placeholder.com/800x600?text=Image+Not+Available";
   };
 
   // Loading state
@@ -347,11 +346,36 @@ export default function Lands() {
     return (
       <>
         <MainNavbar />
-        <main style={{ paddingTop: "7rem", minHeight: "100vh", background: "#f8f9fa" }}>
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "50vh" }}>
+        <main
+          style={{
+            paddingTop: "7rem",
+            minHeight: "100vh",
+            background: "#f8f9fa",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "50vh",
+            }}
+          >
             <div style={{ textAlign: "center" }}>
-              <div style={{ width: "50px", height: "50px", border: "5px solid #f3f3f3", borderTop: "5px solid #ff9900", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 20px" }}></div>
-              <p style={{ fontSize: "1.2rem", color: "#666" }}>Loading Land Projects...</p>
+              <div
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  border: "5px solid #f3f3f3",
+                  borderTop: "5px solid #ff9900",
+                  borderRadius: "50%",
+                  animation: "spin 1s linear infinite",
+                  margin: "0 auto 20px",
+                }}
+              ></div>
+              <p style={{ fontSize: "1.2rem", color: "#666" }}>
+                Loading Land Projects...
+              </p>
             </div>
           </div>
         </main>
@@ -371,7 +395,7 @@ export default function Lands() {
         }}
       >
         <LandHeroSection
-          video="#"
+          video="https://pub-9bd45192d22f4f0e895c52adcfb2460a.r2.dev/envato_video_gen_Nov_17_2025_11_37_19.mp4"
           mediaType="video"
           title="ODILIYA LANDS"
           heading="Your ideal land investment awaits"
@@ -399,7 +423,7 @@ export default function Lands() {
                 searchOptions: {
                   status: ["Available", "Sold Out"],
                   location: getUniqueLocations(),
-                  projectName: allProjects.map(p => p.title).filter(Boolean),
+                  projectName: allProjects.map((p) => p.title).filter(Boolean),
                 },
                 contactInfo: {
                   name: "Odiliya Agent",
@@ -523,37 +547,130 @@ export default function Lands() {
                               gap: "0.75rem",
                             }}
                           >
-                            {selectedProject.amenities && selectedProject.amenities.length > 0 ? (
+                            {selectedProject.amenities &&
+                            selectedProject.amenities.length > 0 ? (
                               selectedProject.amenities.map((item, index) => (
-                                <li key={index} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                  <span style={{ color: "#ff9900", fontSize: "1.2rem" }}>✓</span>
+                                <li
+                                  key={index}
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "0.5rem",
+                                  }}
+                                >
+                                  <span
+                                    style={{
+                                      color: "#ff9900",
+                                      fontSize: "1.2rem",
+                                    }}
+                                  >
+                                    ✓
+                                  </span>
                                   {item.name || item}
                                 </li>
                               ))
                             ) : (
                               <>
-                                <li style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                  <span style={{ color: "#ff9900", fontSize: "1.2rem" }}>✓</span>
+                                <li
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "0.5rem",
+                                  }}
+                                >
+                                  <span
+                                    style={{
+                                      color: "#ff9900",
+                                      fontSize: "1.2rem",
+                                    }}
+                                  >
+                                    ✓
+                                  </span>
                                   Clear title deeds
                                 </li>
-                                <li style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                  <span style={{ color: "#ff9900", fontSize: "1.2rem" }}>✓</span>
+                                <li
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "0.5rem",
+                                  }}
+                                >
+                                  <span
+                                    style={{
+                                      color: "#ff9900",
+                                      fontSize: "1.2rem",
+                                    }}
+                                  >
+                                    ✓
+                                  </span>
                                   All utilities available
                                 </li>
-                                <li style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                  <span style={{ color: "#ff9900", fontSize: "1.2rem" }}>✓</span>
+                                <li
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "0.5rem",
+                                  }}
+                                >
+                                  <span
+                                    style={{
+                                      color: "#ff9900",
+                                      fontSize: "1.2rem",
+                                    }}
+                                  >
+                                    ✓
+                                  </span>
                                   Approved sub-divisions
                                 </li>
-                                <li style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                  <span style={{ color: "#ff9900", fontSize: "1.2rem" }}>✓</span>
+                                <li
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "0.5rem",
+                                  }}
+                                >
+                                  <span
+                                    style={{
+                                      color: "#ff9900",
+                                      fontSize: "1.2rem",
+                                    }}
+                                  >
+                                    ✓
+                                  </span>
                                   Road access guaranteed
                                 </li>
-                                <li style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                  <span style={{ color: "#ff9900", fontSize: "1.2rem" }}>✓</span>
+                                <li
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "0.5rem",
+                                  }}
+                                >
+                                  <span
+                                    style={{
+                                      color: "#ff9900",
+                                      fontSize: "1.2rem",
+                                    }}
+                                  >
+                                    ✓
+                                  </span>
                                   High appreciation potential
                                 </li>
-                                <li style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                  <span style={{ color: "#ff9900", fontSize: "1.2rem" }}>✓</span>
+                                <li
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "0.5rem",
+                                  }}
+                                >
+                                  <span
+                                    style={{
+                                      color: "#ff9900",
+                                      fontSize: "1.2rem",
+                                    }}
+                                  >
+                                    ✓
+                                  </span>
                                   Investment friendly location
                                 </li>
                               </>
@@ -614,7 +731,8 @@ export default function Lands() {
                               Development Status:
                             </strong>
                             <p style={{ margin: "0.25rem 0", color: "#666" }}>
-                              {selectedProject.availability || "Ready for Construction"}
+                              {selectedProject.availability ||
+                                "Ready for Construction"}
                             </p>
                           </div>
                           <div>

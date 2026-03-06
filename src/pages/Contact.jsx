@@ -129,8 +129,8 @@ export default function Contact() {
         <ContactFormWithImage
           title="TALK TO US"
           subtitle="Tell us about your project and we'll get back to you within 24 hours."
-          imageSrc="#"
-          imageAlt="Odiliya modern tower development"
+          imageSrc="https://pub-9bd45192d22f4f0e895c52adcfb2460a.r2.dev/img1_0_xyeveu%20(1).jpg"
+          imageAlt="Odiliya Homes"
           onSubmit={async (formData) => {
             // Handle form submission - replace with your API call
             console.log("Contact form submitted:", formData);

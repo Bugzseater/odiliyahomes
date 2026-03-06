@@ -101,7 +101,7 @@ export default function ProjectDetails() {
       console.log("📸 Main Image:", displayProject.image);
       console.log("📸 Gallery Images:", displayProject.images);
       console.log("📸 Floor Plans:", displayProject.floorPlans);
-      
+
       // Test main image
       if (displayProject.image) {
         console.log("Testing main image:", displayProject.image);
@@ -110,14 +110,16 @@ export default function ProjectDetails() {
         img.onerror = () => console.log("❌ Main image failed to load");
         img.src = displayProject.image;
       }
-      
+
       // Test gallery images
       if (displayProject.images && displayProject.images.length > 0) {
         displayProject.images.forEach((img, index) => {
           console.log(`Testing gallery image ${index}:`, img.src || img);
           const testImg = new Image();
-          testImg.onload = () => console.log(`✅ Gallery image ${index} loaded`);
-          testImg.onerror = () => console.log(`❌ Gallery image ${index} failed to load`);
+          testImg.onload = () =>
+            console.log(`✅ Gallery image ${index} loaded`);
+          testImg.onerror = () =>
+            console.log(`❌ Gallery image ${index} failed to load`);
           testImg.src = img.src || img;
         });
       }
@@ -125,7 +127,7 @@ export default function ProjectDetails() {
   }, [displayProject]);
 
   // Transform floor plans data for FlowPlan component
-  const transformedFloorPlans = displayProject?.floorPlans?.map(plan => ({
+  const transformedFloorPlans = displayProject?.floorPlans?.map((plan) => ({
     title: plan.name,
     image: plan.image,
   }));
@@ -141,8 +143,8 @@ export default function ProjectDetails() {
         `${displayProject.name} - Project Details | Odiliya`;
       const metaDescriptionText =
         displayProject.metaDescription ||
-        (typeof displayProject.description === 'string' 
-          ? displayProject.description 
+        (typeof displayProject.description === "string"
+          ? displayProject.description
           : `${displayProject.name} project details at Odiliya.`);
       document.title = metaTitle;
       let metaDescription = document.querySelector('meta[name="description"]');
@@ -216,14 +218,15 @@ export default function ProjectDetails() {
     }
   };
 
-  const handleImageError = (imageUrl, type = 'image') => {
+  const handleImageError = (imageUrl, type = "image") => {
     console.log(`❌ ${type} failed to load:`, imageUrl);
-    setImageErrors(prev => ({ ...prev, [imageUrl]: true }));
+    setImageErrors((prev) => ({ ...prev, [imageUrl]: true }));
     // Return fallback image URL
-    return 'https://via.placeholder.com/800x600?text=Image+Not+Available';
+    return "https://via.placeholder.com/800x600?text=Image+Not+Available";
   };
 
-  if (!displayProject) return <div className="p-20 text-center">Loading Project Details...</div>;
+  if (!displayProject)
+    return <div className="p-20 text-center">Loading Project Details...</div>;
 
   return (
     <>
@@ -262,11 +265,10 @@ export default function ProjectDetails() {
         <section className="project-details-info-section">
           <div className="project-details-info-container">
             <div className="project-details-info-grid">
-              
               {/* --- DESCRIPTION SECTION --- */}
               <div className="project-main-content">
                 <h1 className="project-details-title">{displayProject.name}</h1>
-                
+
                 <div className="project-details-description">
                   {/* Support both array format (old) and HTML format (new) */}
                   {Array.isArray(displayProject.description) ? (
@@ -320,27 +322,35 @@ export default function ProjectDetails() {
                     </div>
                   ) : (
                     /* HTML format from admin panel */
-                    <div 
+                    <div
                       className="rich-text-display"
-                      style={{ 
-                        whiteSpace: 'pre-line',
+                      style={{
+                        whiteSpace: "pre-line",
                         lineHeight: "1.8",
                         fontSize: "1.1rem",
-                        color: "#374151" 
+                        color: "#374151",
                       }}
-                      dangerouslySetInnerHTML={{ __html: displayProject.description }} 
+                      dangerouslySetInnerHTML={{
+                        __html: displayProject.description,
+                      }}
                     />
                   )}
                 </div>
 
                 {/* Amenities */}
                 {displayProject.amenities?.length > 0 && (
-                  <div className="project-details-features" style={{ marginTop: "3rem" }}>
-                    <h3 className="project-details-features-title">Features And Amenities</h3>
+                  <div
+                    className="project-details-features"
+                    style={{ marginTop: "3rem" }}
+                  >
+                    <h3 className="project-details-features-title">
+                      Features And Amenities
+                    </h3>
                     <ul className="amenity-pills">
                       {displayProject.amenities.map((amenity, idx) => (
                         <li className="amenity-pill" key={idx}>
-                          <span className="icon">{amenity.icon || "✓"}</span> {amenity.name || amenity.title}
+                          <span className="icon">{amenity.icon || "✓"}</span>{" "}
+                          {amenity.name || amenity.title}
                         </li>
                       ))}
                     </ul>
@@ -350,11 +360,15 @@ export default function ProjectDetails() {
 
               {/* --- SIDEBAR INFO --- */}
               <div className="project-details-quick-info">
-                <h3 className="project-details-quick-info-title">Project Information</h3>
+                <h3 className="project-details-quick-info-title">
+                  Project Information
+                </h3>
                 <div className="project-details-quick-info-content">
                   <div className="quick-info-item">
                     <strong className="quick-info-label">Location:</strong>
-                    <p className="quick-info-value">{displayProject.location}</p>
+                    <p className="quick-info-value">
+                      {displayProject.location}
+                    </p>
                   </div>
                   {displayProject.area && (
                     <div className="quick-info-item">
@@ -364,29 +378,54 @@ export default function ProjectDetails() {
                   )}
                   {displayProject.availability && (
                     <div className="quick-info-item">
-                      <strong className="quick-info-label">Availability:</strong>
-                      <p className="quick-info-value">{displayProject.availability}</p>
+                      <strong className="quick-info-label">
+                        Availability:
+                      </strong>
+                      <p className="quick-info-value">
+                        {displayProject.availability}
+                      </p>
                     </div>
                   )}
                   {displayProject.price && (
                     <div className="quick-info-item">
-                      <strong className="quick-info-label">Starting Price:</strong>
-                      <p className="quick-info-value quick-info-price" style={{ color: '#e67e22', fontWeight: 'bold' }}>
+                      <strong className="quick-info-label">
+                        Starting Price:
+                      </strong>
+                      <p
+                        className="quick-info-value quick-info-price"
+                        style={{ color: "#e67e22", fontWeight: "bold" }}
+                      >
                         {displayProject.price}
                       </p>
                     </div>
                   )}
                 </div>
-                
+
                 {displayProject.brochureUrl && (
                   <div className="download-brochure-container">
                     <a
                       href={displayProject.brochureUrl}
                       download
                       className="download-brochure-button"
-                      style={{ display: 'block', textAlign: 'center', marginTop: '1.5rem', padding: '1rem', background: '#2563eb', color: '#fff', borderRadius: '12px', textDecoration: 'none', fontWeight: 'bold' }}
+                      style={{
+                        display: "block",
+                        textAlign: "center",
+                        marginTop: "1.5rem",
+                        padding: "1rem",
+                        background: "#2563eb",
+                        color: "#fff",
+                        borderRadius: "12px",
+                        textDecoration: "none",
+                        fontWeight: "bold",
+                      }}
                     >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ display: 'inline', marginRight: '8px' }}>
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        style={{ display: "inline", marginRight: "8px" }}
+                      >
                         <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
                       </svg>
                       Download Brochure
@@ -394,7 +433,6 @@ export default function ProjectDetails() {
                   </div>
                 )}
               </div>
-
             </div>
           </div>
         </section>
@@ -403,8 +441,16 @@ export default function ProjectDetails() {
         {transformedFloorPlans && transformedFloorPlans.length > 0 && (
           <section style={{ padding: "3rem 1rem", background: "#f8f9fa" }}>
             <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-              <h2 style={{ textAlign: 'center', marginBottom: '2rem', color: '#333' }}>Floor Plans</h2>
-              
+              <h2
+                style={{
+                  textAlign: "center",
+                  marginBottom: "2rem",
+                  color: "#333",
+                }}
+              >
+                Floor Plans
+              </h2>
+
               <FlowPlan
                 title="Floor Plans"
                 plans={transformedFloorPlans}
@@ -417,47 +463,51 @@ export default function ProjectDetails() {
         )}
 
         {/* Virtual Tour Section */}
-        {displayProject.virtualTours && displayProject.virtualTours.length > 0 && (
-          <section style={{ padding: "3rem 1rem", background: "#ffffff" }}>
-            <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-              <VirtualTour
-                title="Virtual Tour"
-                tours={displayProject.virtualTours}
-                autoPlay={false}
-                showControls={true}
-                className="project-details-virtual-tour"
-              />
-            </div>
-          </section>
-        )}
+        {displayProject.virtualTours &&
+          displayProject.virtualTours.length > 0 && (
+            <section style={{ padding: "3rem 1rem", background: "#ffffff" }}>
+              <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+                <VirtualTour
+                  title="Virtual Tour"
+                  thumbnails="https://pub-9bd45192d22f4f0e895c52adcfb2460a.r2.dev/img1_0_xyeveu%20(1).jpg"
+                  tours={displayProject.virtualTours}
+                  autoPlay={false}
+                  showControls={true}
+                  className="project-details-virtual-tour"
+                />
+              </div>
+            </section>
+          )}
 
         {/* Project Gallery Section */}
-        {(displayProject.galleryImages || displayProject.images) && 
-         (displayProject.galleryImages || displayProject.images).length > 0 && (
-          <section style={{ padding: "3rem 1rem", background: "#f8f9fa" }}>
-            <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-              <ProjectGallery
-                title="Project Gallery"
-                images={displayProject.galleryImages || displayProject.images}
-                showThumbnails={true}
-                autoSlide={false}
-                className="project-details-gallery"
-              />
-            </div>
-          </section>
-        )}
+        {(displayProject.galleryImages || displayProject.images) &&
+          (displayProject.galleryImages || displayProject.images).length >
+            0 && (
+            <section style={{ padding: "3rem 1rem", background: "#f8f9fa" }}>
+              <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+                <ProjectGallery
+                  title="Project Gallery"
+                  images={displayProject.galleryImages || displayProject.images}
+                  showThumbnails={true}
+                  autoSlide={false}
+                  className="project-details-gallery"
+                />
+              </div>
+            </section>
+          )}
 
         {/* Project Progress Section */}
-        {displayProject.progressImages && displayProject.progressImages.length > 0 && (
-          <section style={{ padding: "3rem 1rem", background: "#f8f9fa" }}>
-            <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-              <ProjectProgress
-                title="Project Progress"
-                images={displayProject.progressImages}
-              />
-            </div>
-          </section>
-        )}
+        {displayProject.progressImages &&
+          displayProject.progressImages.length > 0 && (
+            <section style={{ padding: "3rem 1rem", background: "#f8f9fa" }}>
+              <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+                <ProjectProgress
+                  title="Project Progress"
+                  images={displayProject.progressImages}
+                />
+              </div>
+            </section>
+          )}
 
         {/* FAQ Section */}
         {displayProject.faqs?.length > 0 && (

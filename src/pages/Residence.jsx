@@ -25,9 +25,18 @@ const createSlug = (name) => {
 const CATEGORIES = ["Apartments", "Residencies", "ROI Projects"];
 
 const CATEGORY_HERO_MEDIA = {
-  0: { type: "video", src: "#" },
-  1: { type: "video", src: "#" },
-  2: { type: "video", src: "#" },
+  0: {
+    type: "video",
+    src: "https://pub-9bd45192d22f4f0e895c52adcfb2460a.r2.dev/apartmentcompress_ri23bo.mp4",
+  },
+  1: {
+    type: "video",
+    src: "https://pub-9bd45192d22f4f0e895c52adcfb2460a.r2.dev/envato_video_gen_Nov_11_2025_4_50_21_duessc.mp4",
+  },
+  2: {
+    type: "video",
+    src: "https://pub-9bd45192d22f4f0e895c52adcfb2460a.r2.dev/envato_video_gen_Jan_08_2026_6_04_57_1_zgk0zs.mp4",
+  },
 };
 
 export default function Residence() {
@@ -58,19 +67,20 @@ export default function Residence() {
       try {
         setLoading(true);
         setFetchError(null);
-        
+
         const querySnapshot = await getDocs(collection(db, "projectDetails"));
-        
+
         const projectsList = [];
         const featuredList = [];
         const detailsMap = {};
-        
+
         querySnapshot.forEach((doc) => {
           const data = doc.data();
-          
+
           // Check if project is "ICON V - Talpe" (exact match)
-          const isIconVTalpe = data.name && data.name.trim() === "ICON V - Talpe";
-          
+          const isIconVTalpe =
+            data.name && data.name.trim() === "ICON V - Talpe";
+
           const formattedProject = {
             id: doc.id,
             name: data.name || "Untitled",
@@ -89,32 +99,34 @@ export default function Residence() {
               title: "Property Advisor",
               phone: "94717508899",
               email: "info@odiliya.lk",
-              avatar: avatar
+              avatar: avatar,
             },
             amenities: data.amenities || [],
             faqs: data.faqs || [],
             virtualTours: data.virtualTours || [],
             brochureUrl: data.brochureUrl || "",
             heroTitle: data.heroTitle || data.name || "",
-            isIconVTalpe: isIconVTalpe  // Changed from isIcon to isIconVTalpe
+            isIconVTalpe: isIconVTalpe, // Changed from isIcon to isIconVTalpe
           };
-          
+
           projectsList.push(formattedProject);
           featuredList.push(formattedProject);
-          
+
           detailsMap[doc.id] = {
             ...formattedProject,
-            slug: data.slug || createSlug(data.name || "")
+            slug: data.slug || createSlug(data.name || ""),
           };
         });
-        
+
         setAllProjects(projectsList);
         setFeaturedProjects(featuredList);
         setProjectDetailsMap(detailsMap);
-        
+
         console.log(`✅ Loaded ${projectsList.length} projects from Firebase`);
-        console.log("ICON V - Talpe Project:", projectsList.filter(p => p.isIconVTalpe).length);
-        
+        console.log(
+          "ICON V - Talpe Project:",
+          projectsList.filter((p) => p.isIconVTalpe).length,
+        );
       } catch (error) {
         console.error("Error fetching projects:", error);
         setFetchError(error.message);
@@ -122,22 +134,23 @@ export default function Residence() {
         setLoading(false);
       }
     };
-    
+
     fetchProjects();
   }, []);
 
   // ========== FILTERED PROJECTS FOR OUR PROJECTS SECTION ==========
   const ourProjectsFiltered = useMemo(() => {
     if (allProjects.length === 0) return [];
-    
+
     const categoryName = CATEGORIES[activeCategory];
-    
+
     console.log(`🎯 Active Category: ${categoryName}`);
-    
+
     return allProjects.filter((project) => {
       // Check if project name is exactly "ICON V - Talpe"
-      const isIconVTalpe = project.name && project.name.trim() === "ICON V - Talpe";
-      
+      const isIconVTalpe =
+        project.name && project.name.trim() === "ICON V - Talpe";
+
       // APARTMENTS category
       if (categoryName === "Apartments") {
         // Show ALL projects that are:
@@ -145,19 +158,19 @@ export default function Residence() {
         // 2. Name is exactly "ICON V - Talpe" (regardless of category)
         return project.category === "Apartments" || isIconVTalpe;
       }
-      
+
       // RESIDENCIES category
       if (categoryName === "Residencies") {
         // Show ONLY projects with category "Residencies" AND NOT "ICON V - Talpe"
         return project.category === "Residencies" && !isIconVTalpe;
       }
-      
+
       // ROI PROJECTS category
       if (categoryName === "ROI Projects") {
         // Show only ROI Projects
         return project.category === "ROI Projects";
       }
-      
+
       // Default: show by category
       return project.category === categoryName;
     });
@@ -166,25 +179,26 @@ export default function Residence() {
   // ========== FILTERED PROJECTS FOR SEARCH SECTION ==========
   const filteredFeaturedProjects = useMemo(() => {
     if (featuredProjects.length === 0) return [];
-    
+
     const categoryName = CATEGORIES[activeCategory];
-    
+
     // First filter by category and special rules
     const baseProjects = featuredProjects.filter((project) => {
-      const isIconVTalpe = project.name && project.name.trim() === "ICON V - Talpe";
-      
+      const isIconVTalpe =
+        project.name && project.name.trim() === "ICON V - Talpe";
+
       if (categoryName === "Apartments") {
         return project.category === "Apartments" || isIconVTalpe;
       }
-      
+
       if (categoryName === "Residencies") {
         return project.category === "Residencies" && !isIconVTalpe;
       }
-      
+
       if (categoryName === "ROI Projects") {
         return project.category === "ROI Projects";
       }
-      
+
       return project.category === categoryName;
     });
 
@@ -218,25 +232,26 @@ export default function Residence() {
     if (featuredProjects.length === 0) {
       return { status: [], location: [], projectName: [] };
     }
-    
+
     const categoryName = CATEGORIES[activeCategory];
-    
+
     // Apply same filtering for search options
     const categoryProjects = featuredProjects.filter((project) => {
-      const isIconVTalpe = project.name && project.name.trim() === "ICON V - Talpe";
-      
+      const isIconVTalpe =
+        project.name && project.name.trim() === "ICON V - Talpe";
+
       if (categoryName === "Apartments") {
         return project.category === "Apartments" || isIconVTalpe;
       }
-      
+
       if (categoryName === "Residencies") {
         return project.category === "Residencies" && !isIconVTalpe;
       }
-      
+
       if (categoryName === "ROI Projects") {
         return project.category === "ROI Projects";
       }
-      
+
       return project.category === categoryName;
     });
 
@@ -247,7 +262,7 @@ export default function Residence() {
       status: unique(categoryProjects.map((project) => project.availability)),
       location: unique(categoryProjects.map((project) => project.location)),
       projectName: unique(
-        categoryProjects.map((project) => project.title || project.name || "")
+        categoryProjects.map((project) => project.title || project.name || ""),
       ),
     };
   }, [activeCategory, featuredProjects]);
@@ -260,7 +275,7 @@ export default function Residence() {
     if (projectId && shouldShowDetails && projectDetailsMap[projectId]) {
       const projectDetails = projectDetailsMap[projectId];
       const slug = projectDetails.slug || createSlug(projectDetails.name);
-      
+
       navigate(`/project-details/${slug}`, {
         state: {
           projectId: projectId,
@@ -398,7 +413,7 @@ export default function Residence() {
             <div className="text-center bg-red-50 p-8 rounded-2xl">
               <p className="text-red-600 text-xl mb-2">❌ Error loading data</p>
               <p className="text-gray-600">{fetchError}</p>
-              <button 
+              <button
                 onClick={() => window.location.reload()}
                 className="mt-4 px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
               >
@@ -479,7 +494,9 @@ export default function Residence() {
               />
             ) : (
               <div className="text-center py-12">
-                <p className="text-gray-500">No projects available in this category</p>
+                <p className="text-gray-500">
+                  No projects available in this category
+                </p>
               </div>
             )}
 
@@ -501,7 +518,9 @@ export default function Residence() {
               />
             ) : (
               <div className="text-center py-12">
-                <p className="text-gray-500">No projects match your search criteria</p>
+                <p className="text-gray-500">
+                  No projects match your search criteria
+                </p>
               </div>
             )}
           </>
@@ -565,64 +584,78 @@ export default function Residence() {
                       <h1 className="residence-project-title">
                         {selectedProject.name}
                       </h1>
-                      
-                      <div 
+
+                      <div
                         className="residence-project-description prose max-w-none"
-                        dangerouslySetInnerHTML={{ 
-                          __html: selectedProject.description || 'No description available' 
-                        }} 
+                        dangerouslySetInnerHTML={{
+                          __html:
+                            selectedProject.description ||
+                            "No description available",
+                        }}
                       />
 
-                      {selectedProject.amenities && selectedProject.amenities.length > 0 && (
-                        <div className="residence-project-features">
-                          <h3 className="residence-project-features-title">
-                            Features And Amenities
-                          </h3>
-                          <ul className="amenity-pills">
-                            {selectedProject.amenities.map((item, idx) => (
-                              <li key={idx} className="amenity-pill">
-                                <span className="icon">✓</span> {item.name || item}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      {selectedProject.virtualTours && selectedProject.virtualTours.length > 0 && (
-                        <div className="residence-project-virtual-tours mt-8">
-                          <h3 className="text-xl font-bold mb-4">Virtual Tours</h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {selectedProject.virtualTours.map((tour, idx) => (
-                              <div key={idx} className="bg-gray-50 rounded-xl p-4">
-                                {tour.thumbnail && (
-                                  <img 
-                                    src={tour.thumbnail} 
-                                    alt={tour.description}
-                                    className="w-full h-40 object-cover rounded-lg mb-3"
-                                  />
-                                )}
-                                <h4 className="font-semibold mb-2">{tour.description}</h4>
-                                <p className="text-sm text-gray-600 mb-2">Duration: {tour.duration}</p>
-                                <a 
-                                  href={tour.video}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-blue-600 hover:underline text-sm"
-                                >
-                                  Watch Video →
-                                </a>
-                                {tour.details && tour.details.length > 0 && (
-                                  <ul className="mt-2 text-sm text-gray-600">
-                                    {tour.details.map((detail, i) => (
-                                      <li key={i}>• {detail.text}</li>
-                                    ))}
-                                  </ul>
-                                )}
-                              </div>
-                            ))}
+                      {selectedProject.amenities &&
+                        selectedProject.amenities.length > 0 && (
+                          <div className="residence-project-features">
+                            <h3 className="residence-project-features-title">
+                              Features And Amenities
+                            </h3>
+                            <ul className="amenity-pills">
+                              {selectedProject.amenities.map((item, idx) => (
+                                <li key={idx} className="amenity-pill">
+                                  <span className="icon">✓</span>{" "}
+                                  {item.name || item}
+                                </li>
+                              ))}
+                            </ul>
                           </div>
-                        </div>
-                      )}
+                        )}
+
+                      {selectedProject.virtualTours &&
+                        selectedProject.virtualTours.length > 0 && (
+                          <div className="residence-project-virtual-tours mt-8">
+                            <h3 className="text-xl font-bold mb-4">
+                              Virtual Tours
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {selectedProject.virtualTours.map((tour, idx) => (
+                                <div
+                                  key={idx}
+                                  className="bg-gray-50 rounded-xl p-4"
+                                >
+                                  {tour.thumbnail && (
+                                    <img
+                                      src={tour.thumbnail}
+                                      alt={tour.description}
+                                      className="w-full h-40 object-cover rounded-lg mb-3"
+                                    />
+                                  )}
+                                  <h4 className="font-semibold mb-2">
+                                    {tour.description}
+                                  </h4>
+                                  <p className="text-sm text-gray-600 mb-2">
+                                    Duration: {tour.duration}
+                                  </p>
+                                  <a
+                                    href={tour.video}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:underline text-sm"
+                                  >
+                                    Watch Video →
+                                  </a>
+                                  {tour.details && tour.details.length > 0 && (
+                                    <ul className="mt-2 text-sm text-gray-600">
+                                      {tour.details.map((detail, i) => (
+                                        <li key={i}>• {detail.text}</li>
+                                      ))}
+                                    </ul>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                     </div>
 
                     {/* Right Column - Quick Info */}
@@ -637,7 +670,10 @@ export default function Residence() {
                         </div>
                         <div className="residence-project-info-item">
                           <strong>Property Type:</strong>
-                          <p>{selectedProject.category || "Residential Development"}</p>
+                          <p>
+                            {selectedProject.category ||
+                              "Residential Development"}
+                          </p>
                         </div>
                         <div className="residence-project-info-item">
                           <strong>Units Available:</strong>
@@ -666,12 +702,14 @@ export default function Residence() {
                             <strong>Availability:</strong>
                             <p
                               style={{
-                                color: selectedProject.availability === "Available"
-                                  ? "#28a745"
-                                  : "#666",
-                                fontWeight: selectedProject.availability === "Available"
-                                  ? "600"
-                                  : "normal",
+                                color:
+                                  selectedProject.availability === "Available"
+                                    ? "#28a745"
+                                    : "#666",
+                                fontWeight:
+                                  selectedProject.availability === "Available"
+                                    ? "600"
+                                    : "normal",
                               }}
                             >
                               {selectedProject.availability}
@@ -681,7 +719,7 @@ export default function Residence() {
                         {selectedProject.brochureUrl && (
                           <div className="residence-project-info-item">
                             <strong>Brochure:</strong>
-                            <a 
+                            <a
                               href={selectedProject.brochureUrl}
                               target="_blank"
                               rel="noopener noreferrer"
@@ -693,19 +731,29 @@ export default function Residence() {
                         )}
                       </div>
 
-                      {selectedProject.faqs && selectedProject.faqs.length > 0 && (
-                        <div className="mt-6">
-                          <h4 className="font-semibold mb-3">Frequently Asked Questions</h4>
-                          <div className="space-y-3">
-                            {selectedProject.faqs.map((faq, idx) => (
-                              <div key={idx} className="bg-gray-50 p-3 rounded-lg">
-                                <p className="font-medium text-sm mb-1">Q: {faq.question}</p>
-                                <p className="text-sm text-gray-600">A: {faq.answer}</p>
-                              </div>
-                            ))}
+                      {selectedProject.faqs &&
+                        selectedProject.faqs.length > 0 && (
+                          <div className="mt-6">
+                            <h4 className="font-semibold mb-3">
+                              Frequently Asked Questions
+                            </h4>
+                            <div className="space-y-3">
+                              {selectedProject.faqs.map((faq, idx) => (
+                                <div
+                                  key={idx}
+                                  className="bg-gray-50 p-3 rounded-lg"
+                                >
+                                  <p className="font-medium text-sm mb-1">
+                                    Q: {faq.question}
+                                  </p>
+                                  <p className="text-sm text-gray-600">
+                                    A: {faq.answer}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </div>
                   </div>
                 </div>
