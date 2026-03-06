@@ -28,25 +28,47 @@ export default function About() {
       }
     });
 
-    document.title = "Real Estate Companies in Sri Lanka | Overview | Odiliya Homes";
+    document.title =
+      "Real Estate Companies in Sri Lanka | Overview | Odiliya Homes";
     return () => unsub();
   }, []);
 
   return (
     <>
       <MainNavbar />
-      <main style={{ paddingTop: "1rem", minHeight: "100vh", background: "#ffffff" }}>
+      <main
+        style={{
+          paddingTop: "1rem",
+          minHeight: "100vh",
+          background: "#ffffff",
+        }}
+      >
         <AboutHeroSection
           breadcrumb="Home > About Us > Overview"
           subtitle="OVERVIEW"
           title="WHAT IS ODILIYA"
-          description={liveData?.description || "Odiliya Homes is one of the leading real estate companies in Sri Lanka with 12+ years of expertise. We create premium residential spaces that blend elegance, innovation, and trust."}
+          description={
+            liveData?.description ||
+            "Odiliya Homes is one of the leading real estate companies in Sri Lanka with 12+ years of expertise. We create premium residential spaces that blend elegance, innovation, and trust."
+          }
           image={heroImg}
           stats={[
-            { number: liveData?.completedProjects + "+" || "100+", label: "Completed Projects" },
-            { number: liveData?.ongoingProjects +"+" || "20+", label: "Ongoing Projects" },
-            { number: liveData?.soldOutProjects +"+" || "100+", label: "Sold Out Projects" },
-            { number: liveData?.yearsOfTrust +"+" || "13+", label: "Years Of Trust" },
+            {
+              number: liveData?.completedProjects + "+" || "100+",
+              label: "Completed Projects",
+            },
+            {
+              number: liveData?.ongoingProjects + "+" || "20+",
+              label: "Ongoing Projects",
+            },
+            {
+              number: liveData?.soldOutProjects + "+" || "100+",
+              label: "Sold Out Projects",
+            },
+            {
+              number: liveData?.yearsOfTrust + "+" || "13+",
+              label: "Years Of Trust",
+            },
           ]}
         />
 
@@ -88,8 +110,7 @@ export default function About() {
         <HistoryVideo
           title="Over 13+ years of experience"
           description="Explore our journey and see how we transform visions into reality through premium residencies."
-          videoSrc="https://res.cloudinary.com/dtyx8tfbl/video/upload/v1766050284/WhatsApp_Video_2025-11-18_at_16.03.55_zp8bct.mp4"
-          posterSrc="/path/to/poster-image.jpg"
+          youtubeUrl="https://youtu.be/I55vM8_LjKM"
           autoplay={false}
           controls={true}
         />

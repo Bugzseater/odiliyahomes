@@ -56,6 +56,14 @@ Disallow: /private/
 Disallow: /test/
 Disallow: /staging/
 
+User-agent: *
+Disallow: /admin/
+Disallow: /api/
+Disallow: /private/
+Disallow: /test/
+Disallow: /staging/
+Allow: /
+
 Sitemap: https://odiliyahomes.lk/sitemap.xml
 Sitemap: https://odiliyahomes.lk/sitemap-properties.xml
 Sitemap: https://odiliyahomes.lk/sitemap-pages.xml

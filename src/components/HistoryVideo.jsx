@@ -5,11 +5,13 @@ import "@/styles/HistoryVideo.css";
 /**
  * HistoryVideo - Reusable video section component
  * Features title, description, video with play button overlay
+ * Supports both video files and YouTube links
  */
 export default function HistoryVideo({
   title = "OVER 15 YEARS OF EXPERIENCE",
   description = "Lorem ipsum dolor sit amet consectetur, morper placerat purus cursus id felis dignism proin ugat. Pretium proin nulla armados et suspendisse non quam",
   videoSrc,
+  youtubeUrl,
   posterImage,
   autoPlay = false,
   showControls = true,
@@ -21,6 +23,23 @@ export default function HistoryVideo({
   const [videoRef, setVideoRef] = useState(null);
   const sectionRef = useRef(null);
   const lastScrollY = useRef(0);
+
+  // Extract YouTube video ID from URL
+  const getYouTubeEmbedUrl = (url) => {
+    if (!url) return null;
+
+    const regExp =
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    const videoId = match && match[2].length === 11 ? match[2] : null;
+
+    if (videoId) {
+      return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`;
+    }
+    return null;
+  };
+
+  const embedUrl = getYouTubeEmbedUrl(youtubeUrl);
 
   useEffect(() => {
     const currentSection = sectionRef.current;
@@ -44,7 +63,7 @@ export default function HistoryVideo({
       {
         threshold: 0.2,
         rootMargin: "0px 0px -100px 0px",
-      }
+      },
     );
 
     if (currentSection) {
@@ -91,7 +110,18 @@ export default function HistoryVideo({
         {/* Video Section */}
         <div className="history-video__video-container">
           <div className="history-video__video-wrapper">
-            {videoSrc ? (
+            {embedUrl ? (
+              // YouTube Embed
+              <iframe
+                className="history-video__video"
+                src={embedUrl}
+                title={title}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : videoSrc ? (
+              // Regular Video File
               <video
                 ref={setVideoRef}
                 className="history-video__video"
@@ -115,8 +145,8 @@ export default function HistoryVideo({
               )
             )}
 
-            {/* Play Button Overlay */}
-            {!isPlaying && (
+            {/* Play Button Overlay - Only show for regular videos, not YouTube */}
+            {!embedUrl && !isPlaying && videoSrc && (
               <button
                 className="history-video__play-button"
                 onClick={handlePlayClick}
@@ -142,6 +172,7 @@ HistoryVideo.propTypes = {
   title: PropTypes.string,
   description: PropTypes.string,
   videoSrc: PropTypes.string,
+  youtubeUrl: PropTypes.string,
   posterImage: PropTypes.string,
   autoPlay: PropTypes.bool,
   showControls: PropTypes.bool,
