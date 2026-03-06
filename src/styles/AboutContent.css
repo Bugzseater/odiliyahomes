@@ -3,7 +3,9 @@
   background: #ffffff;
   opacity: 0;
   transform: translateY(50px);
-  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  transition:
+    opacity 0.5s ease-out,
+    transform 0.5s ease-out;
 }
 
 .about-content.animate-in {
@@ -48,7 +50,9 @@
   align-items: center;
   opacity: 0;
   transform: scale(0.9);
-  transition: opacity 0.5s ease-out 0.1s, transform 0.5s ease-out 0.1s;
+  transition:
+    opacity 0.5s ease-out 0.1s,
+    transform 0.5s ease-out 0.1s;
 }
 
 .about-content.animate-in .about-content__image-section {
@@ -90,7 +94,7 @@
   margin-right: 0;
   width: 150px;
   height: 150px;
-  background: url("https://res.cloudinary.com/dswr94sjy/image/upload/v1762491241/real-estate-housing-brokerage-concept_xrfno0.jpg")
+  background: url("https://pub-9bd45192d22f4f0e895c52adcfb2460a.r2.dev/realestate.jpeg")
     center/cover no-repeat;
   z-index: 5;
   top: 100%;
@@ -115,7 +119,9 @@
   padding: 1rem;
   opacity: 0;
   transform: translateX(-30px);
-  transition: opacity 0.5s ease-out 0.2s, transform 0.5s ease-out 0.2s;
+  transition:
+    opacity 0.5s ease-out 0.2s,
+    transform 0.5s ease-out 0.2s;
 }
 
 .about-content.animate-in .about-content__text {

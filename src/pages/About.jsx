@@ -13,7 +13,7 @@ import Footer from "@/components/Footer";
 import vision from "@/assets/images/vision.jpg";
 import mission from "@/assets/images/mission.png";
 import goal from "@/assets/images/goal.webp";
-import history1 from "@/assets/images/img1_9.JPG";
+// import history1 from "@/assets/images/img1_9.JPG";
 import history2 from "@/assets/images/history2.jpg";
 
 export default function About() {
@@ -103,7 +103,7 @@ export default function About() {
           title="OUR HISTORY"
           description="The Group began in 2013 with a bold vision: to make real estate accessible to every Sri Lankan family. From affordable lands to luxury residences."
           primaryImage={history2}
-          secondaryImage={history1}
+          secondaryImage="https://pub-9bd45192d22f4f0e895c52adcfb2460a.r2.dev/img1_0_xyeveu%20(1).jpg"
           layout="image-left"
         />
 
